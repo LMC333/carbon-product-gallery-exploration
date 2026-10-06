@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" data-carbon-theme="g10">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IBM Carbon Product Gallery — Explorations Portal</title>
+  
+  <!-- Load official Carbon Stylesheet for premium IBM look and feel -->
+  <link rel="stylesheet" href="https://unpkg.com/@carbon/styles/css/styles.css">
+  
+  <style>
+    :root {
+      --cds-interactive-01: #0f62fe; /* Carbon Blue */
+      --cds-interactive-02: #8a3ffc; /* Carbon Purple */
+      --cds-text-primary: #161616;
+      --cds-text-secondary: #525252;
+      --cds-text-helper: #6f6f6f;
+      --cds-background: #ffffff;
+      --cds-field-01: #f4f4f4;
+      --cds-border-subtle-01: #e0e0e0;
+      --cds-spacing-04: 0.75rem;   /* 12px */
+      --cds-spacing-05: 1.5rem;    /* 24px */
+      --cds-spacing-06: 2.25rem;   /* 36px */
+      --cds-spacing-07: 3rem;      /* 48px */
+    }
+
+    body {
+      background-color: #f4f4f4;
+      color: var(--cds-text-primary);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Global Header */
+    .cds-global-header {
+      background-color: #161616;
+      height: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      border-bottom: 1px solid #393939;
+      position: sticky;
+      top: 0;
+      z-index: 500;
+    }
+
+    .header-logo {
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .header-logo span {
+      font-weight: 300;
+      color: #a8a8a8;
+      margin-left: 4px;
+    }
+
+    /* Hero Spotlight Section */
+    .hero-banner {
+      background-color: #161616;
+      color: #ffffff;
+      padding: var(--cds-spacing-07) 24px;
+      border-bottom: 1px solid #393939;
+      text-align: center;
+    }
+
+    .hero-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-tag {
+      font-size: 12px;
+      color: #78a9ff;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 300;
+      margin: 0 0 16px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-title strong {
+      font-weight: 600;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #c6c6c6;
+      margin: 0 auto;
+      max-width: 650px;
+    }
+
+    /* Main Grid Layout */
+    .portal-main {
+      max-width: 1200px;
+      margin: var(--cds-spacing-06) auto;
+      padding: 0 24px;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    /* Carbon Card Component */
+    .exploration-card {
+      background-color: #ffffff;
+      border: 1px solid var(--cds-border-subtle-01);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.15s cubic-bezier(0.2, 0, 0.38, 0.9);
+      min-height: 280px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .exploration-card:hover {
+      border-color: var(--cds-interactive-01);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .card-top {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .carbon-tag-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag-blue { background-color: #edf5ff; color: #002d9c; }
+    .tag-purple { background-color: #f7f1ff; color: #6929c4; }
+    .tag-green { background-color: #def8e9; color: #196434; }
+    .tag-gray { background-color: #e0e0e0; color: #161616; }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--cds-text-primary);
+      margin: 4px 0 0 0;
+    }
+
+    .card-description {
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--cds-text-secondary);
+      margin: 8px 0 0 0;
+    }
+
+    .card-action {
+      margin-top: 24px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      background-color: var(--cds-interactive-01);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      transition: background-color 0.15s ease;
+      box-sizing: border-box;
+      border: none;
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      background-color: #0353e9; /* Darker blue */
+    }
+
+    .action-btn svg {
+      fill: currentColor;
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Bottom Footer */
+    .app-brand-footer {
+      border-top: 1px solid var(--cds-border-subtle-01);
+      margin-top: var(--cds-spacing-07);
+      padding: var(--cds-spacing-05) 0;
+      color: var(--cds-text-helper);
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-frame">
+    
+    <!-- Top Global Carbon Header -->
+    <header class="cds-global-header">
+      <a href="#" class="header-logo">
+        IBM Carbon <span>Product Gallery Redefined</span>
+      </a>
+      <div style="font-size: 11px; color: #a8a8a8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Explorations Portal</div>
+    </header>
+
+    <!-- Hero Spotlight Section -->
+    <section class="hero-banner">
+      <div class="hero-container">
+        <div class="hero-tag">Design System Hub & Curation Suite</div>
+        <h1 class="hero-title">Carbon in Action <strong>Product Gallery</strong></h1>
+        <p class="hero-subtitle">Welcome to the central review portal for the next-generation Carbon Product Gallery. Select any card below to explore the user research, responsive layouts, or V12 migration tools.</p>
+      </div>
+    </section>
+
+    <!-- Main Portal Area -->
+    <main class="portal-main">
+      <div class="grid-container">
+        
+        <!-- Card 1: Gallery Hub -->
+        <div class="exploration-card">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="carbon-tag-badge tag-blue">Main Hub</span>
+              <span class="carbon-tag-badge tag-green">Production Ready</span>
+            </div>
+            <h2 class="card-title">Gallery Hub</h2>
+            <p class="card-description">The main showcase hub for the Product Gallery. Explore complete production screens, custom component parameters, and interactive details with direct links to Slack profiles and components.</p>
+          </div>
+          <div class="card-action">
+            <a class="action-btn" href="carbon-workspace/Product gallery/Product_Gallery_Discovery_Homepage.html">
+              Open Gallery Hub
+              <svg viewBox="0 0 32 32">
+                <path d="M26 18A1 1 0 0025 19v9H5V7h9a1 1 0 000-2H5a2 2 0 00-2 2v21a2 2 0 002 2h21a2 2 0 002-2V19A1 1 0 0026 18zM18 4a1 1 0 000 2h6.59L13.3 17.29a1 1 0 001.41 1.42L26 7.41V14a1 1 0 002 0V5a2 2 0 00-2-2H18z"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 2: Strategic Proposal -->
+        <div class="exploration-card">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="carbon-tag-badge tag-purple">Executive Strategic</span>
+              <span class="carbon-tag-badge tag-gray">Research-Driven</span>
+            </div>
+            <h2 class="card-title">Strategic Proposal</h2>
+            <p class="card-description">Our core research synthesis and strategic roadmap. Details quantitative metrics, qualitative thematic affinity mapping, and the architectural proposal for the next-generation Gallery.</p>
+          </div>
+          <div class="card-action">
+            <a class="action-btn" href="carbon-workspace/Product gallery/Carbon_Product_Gallery_Strategic_Proposal.html">
+              View Strategy Proposal
+              <svg viewBox="0 0 32 32">
+                <path d="M26 18A1 1 0 0025 19v9H5V7h9a1 1 0 000-2H5a2 2 0 00-2 2v21a2 2 0 002 2h21a2 2 0 002-2V19A1 1 0 0026 18zM18 4a1 1 0 000 2h6.59L13.3 17.29a1 1 0 001.41 1.42L26 7.41V14a1 1 0 002 0V5a2 2 0 00-2-2H18z"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3: Layout Options -->
+        <div class="exploration-card">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="carbon-tag-badge tag-blue">Interactive UX</span>
+              <span class="carbon-tag-badge tag-purple">Design Options</span>
+            </div>
+            <h2 class="card-title">Gallery Layout Options</h2>
+            <p class="card-description">Interactive explorations comparing layout patterns. Test drive the Dual-Canvas Split View, the Overlay Highlight Engine, and the List Inspector view with live screens.</p>
+          </div>
+          <div class="card-action">
+            <a class="action-btn" href="carbon-workspace/Product gallery/Visual_Gallery_Layout_Explorations.html">
+              Explore Layout Options
+              <svg viewBox="0 0 32 32">
+                <path d="M26 18A1 1 0 0025 19v9H5V7h9a1 1 0 000-2H5a2 2 0 00-2 2v21a2 2 0 002 2h21a2 2 0 002-2V19A1 1 0 0026 18zM18 4a1 1 0 000 2h6.59L13.3 17.29a1 1 0 001.41 1.42L26 7.41V14a1 1 0 002 0V5a2 2 0 00-2-2H18z"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 4: V12 Migration Explorer -->
+        <div class="exploration-card">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="carbon-tag-badge tag-green">V12 Accelerator</span>
+              <span class="carbon-tag-badge tag-blue">Search &amp; Filter</span>
+            </div>
+            <h2 class="card-title">V12 Migration Explorer</h2>
+            <p class="card-description">An interactive playground comparing V11 legacy screens with their migrated V12 counterparts. Includes slider views, side-by-side grids, and an active search &amp; filter system for components.</p>
+          </div>
+          <div class="card-action">
+            <a class="action-btn" href="carbon-workspace/Product gallery/V12_Migration_Layout_Explorations.html">
+              Open Migration Explorer
+              <svg viewBox="0 0 32 32">
+                <path d="M26 18A1 1 0 0025 19v9H5V7h9a1 1 0 000-2H5a2 2 0 00-2 2v21a2 2 0 002 2h21a2 2 0 002-2V19A1 1 0 0026 18zM18 4a1 1 0 000 2h6.59L13.3 17.29a1 1 0 001.41 1.42L26 7.41V14a1 1 0 002 0V5a2 2 0 00-2-2H18z"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="app-brand-footer">
+        Made with IBM Bob
+      </div>
+    </main>
+  </div>
+</body>
+</html>
