@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en" data-carbon-theme="g10">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carbon in Action — Product Gallery Curation Hub</title>
+  
+  <!-- Load official Carbon Stylesheet for premium IBM look and feel -->
+  <link rel="stylesheet" href="https://unpkg.com/@carbon/styles/css/styles.css">
+  
+  <style>
+    /* Premium overrides and variables aligning with Carbon Design System tokens */
+    :root {
+      --cds-interactive-01: #0f62fe; /* Carbon Blue */
+      --cds-interactive-02: #8a3ffc; /* Carbon Purple */
+      --cds-support-success: #24a148; /* Carbon Green */
+      --cds-text-primary: #161616;
+      --cds-text-secondary: #525252;
+      --cds-text-helper: #6f6f6f;
+      --cds-background: #ffffff;
+      --cds-field-01: #f4f4f4;
+      --cds-border-subtle-01: #e0e0e0;
+      --cds-spacing-04: 0.75rem;   /* 12px */
+      --cds-spacing-05: 1.5rem;    /* 24px */
+      --cds-spacing-06: 2.25rem;   /* 36px */
+      --cds-spacing-07: 3rem;      /* 48px */
+    }
+
+    body {
+      background-color: #f4f4f4;
+      color: var(--cds-text-primary);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Core Frame Layout */
+    .app-frame {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Top Global Navigation Bar */
+    .cds-global-header {
+      background-color: #161616;
+      height: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      border-bottom: 1px solid #393939;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 500;
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    }
+
+    .header-nav-link {
+      color: #c6c6c6;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 400;
+      padding: 0 16px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s ease;
+      border-bottom: 3px solid transparent;
+      box-sizing: border-box;
+    }
+
+    .header-nav-link:hover {
+      background-color: #262626;
+      color: #ffffff;
+    }
+
+    .header-nav-link.active {
+      color: #ffffff;
+      font-weight: 600;
+      border-bottom-color: #0f62fe;
+      background-color: #262626;
+    }
+
+    /* Hero Spotlight Arena */
+    .hero-arena {
+      background-color: #161616;
+      color: #ffffff;
+      padding: var(--cds-spacing-07) 0;
+      position: relative;
+      border-bottom: 1px solid #393939;
+    }
+
+    .hero-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--cds-spacing-05);
+    }
+
+    .hero-tag {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--cds-interactive-01);
+      margin-bottom: 8px;
+    }
+
+    .hero-title {
+      font-size: 36px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin: 0 0 16px 0;
+      line-height: 1.15;
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      color: #c6c6c6;
+      max-width: 680px;
+      line-height: 1.6;
+      margin: 0 0 32px 0;
+    }
+
+    /* Omnibar Search Interface */
+    .search-wrapper {
+      position: relative;
+      max-width: 720px;
+      background-color: #262626;
+      border-bottom: 2px solid #a8a8a8;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+
+    .search-wrapper:focus-within {
+      border-bottom-color: var(--cds-interactive-01);
+      background-color: #393939;
+    }
+
+    .search-icon {
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      color: #ffffff;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 48px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .search-input::placeholder {
+      color: #8d8d8d;
+    }
+
+    /* Popular Searches Row */
+    .popular-tags-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      font-size: 11.5px;
+      color: #8d8d8d;
+    }
+
+    .popular-search-tag {
+      color: #ffffff;
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: inherit;
+      font-family: inherit;
+    }
+
+    .popular-search-tag:hover {
+      color: var(--cds-interactive-01);
+    }
+
+    /* Featured Content Spotlight Banner */
+    .editorial-spotlight {
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding: var(--cds-spacing-05) 0;
+    }
+
+    .spotlight-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--cds-spacing-05);
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .spotlight-image-panel {
+      background-color: #f4f4f4;
+      border: 1px solid var(--cds-border-subtle-01);
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .spotlight-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background-color: #8a3ffc;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+    }
+
+    .spotlight-title {
+      font-size: 24px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin: 0 0 12px 0;
+      line-height: 1.3;
+    }
+
+    .spotlight-text {
+      font-size: 13.5px;
+      color: var(--cds-text-secondary);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .spotlight-action-btn {
+      background-color: var(--cds-interactive-01);
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .spotlight-action-btn:hover {
+      background-color: #0043ce;
+    }
+
+    /* Browse/Discovery Main Board */
+    .discovery-workspace {
+      max-width: 1200px;
+      margin: var(--cds-spacing-05) auto;
+      padding: 0 var(--cds-spacing-05);
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 32px;
+    }
+
+    /* Filter Drawer Panel */
+    .filter-drawer {
+      background-color: #ffffff;
+      border: 1px solid var(--cds-border-subtle-01);
+      padding: 20px;
+      height: fit-content;
+    }
+
+    .filter-section {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding-bottom: 16px;
+    }
+
+    .filter-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .filter-section-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--cds-text-helper);
+      margin: 0 0 12px 0;
+    }
+
+    .filter-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--cds-text-secondary);
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .filter-checkbox-label input {
+      accent-color: var(--cds-interactive-01);
+    }
+
+    /* Pinterest-Style Grid & Cards */
+    .gallery-board {
+      display: flex;
+      flex-direction: column;
+      gap: var(--cds-spacing-05);
+    }
+
+    .gallery-header-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding-bottom: 12px;
+    }
+
+    .results-count {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--cds-text-secondary);
+    }
+
+    .sort-dropdown {
+      background-color: #ffffff;
+      border: 1px solid var(--cds-border-subtle-01);
+      color: var(--cds-text-primary);
+      padding: 6px 12px;
+      font-size: 12.5px;
+      outline: none;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    /* Showcase Card */
+    .showcase-card {
+      background-color: #ffffff;
+      border: 1px solid var(--cds-border-subtle-01);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+    }
+
+    .showcase-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .card-visual-header {
+      background-color: #f4f4f4;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      overflow: hidden;
+    }
+
+    .card-visual-mockup {
+      padding: 16px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: #ffffff;
+      transform: scale(0.95);
+      border: 1px solid #e0e0e0;
+      transition: all 0.2s ease;
+    }
+
+    .showcase-card:hover .card-visual-mockup {
+      transform: scale(1.02);
+    }
+
+    /* Component tags on hover */
+    .card-hover-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(22, 22, 22, 0.85);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 16px;
+      align-content: flex-start;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 10;
+    }
+
+    .showcase-card:hover .card-hover-overlay {
+      opacity: 1;
+    }
+
+    .overlay-comp-tag {
+      background-color: var(--cds-interactive-01);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    .card-meta-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-category {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--cds-text-helper);
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--cds-text-primary);
+      margin: 0 0 6px 0;
+      line-height: 1.3;
+    }
+
+    .card-product-tagline {
+      font-size: 12px;
+      color: var(--cds-text-secondary);
+      margin-bottom: var(--cds-spacing-04);
+    }
+
+    .card-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    .badge-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .badge-react { background-color: #edf5ff; color: #0043ce; border: 1px solid #d0e2ff; }
+    .badge-v12 { background-color: #f7f1ff; color: #6929c4; border: 1px solid #e8daff; }
+    .badge-fork { background-color: #fff0f1; color: #da1e28; border: 1px solid #ffd7d9; }
+    .badge-std { background-color: #defbe6; color: #0f6224; border: 1px solid #a7f0ba; }
+
+    .card-stats-row {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--cds-border-subtle-01);
+      padding-top: 12px;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--cds-text-helper);
+    }
+
+    .card-stats-left { display: flex; gap: 12px; }
+
+    /* ========================================== */
+    /* PROGRESSIVE DISCLOSURE MODAL SHEET         */
+    /* ========================================== */
+    .inspect-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(22, 22, 22, 0.7);
+      backdrop-filter: blur(2px);
+      z-index: 1000;
+      display: flex;
+      justify-content: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .inspect-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .inspect-sheet {
+      width: 820px;
+      height: 100%;
+      background-color: #ffffff;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .inspect-overlay.active .inspect-sheet {
+      transform: translateX(0);
+    }
+
+    .sheet-header {
+      background-color: #161616;
+      color: #ffffff;
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .sheet-header-left { display: flex; flex-direction: column; }
+    .sheet-breadcrumbs { font-size: 11px; color: #a8a8a8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;}
+    .sheet-title { font-size: 20px; font-weight: 400; margin: 0; }
+    .sheet-close-btn { background: transparent; border: none; color: #ffffff; font-size: 24px; cursor: pointer; }
+
+    /* Tab controls inside sheet */
+    .sheet-tabs-row {
+      background-color: #f4f4f4;
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      display: flex;
+      flex-shrink: 0;
+    }
+
+    .sheet-tab {
+      background: transparent;
+      border: none;
+      color: var(--cds-text-secondary);
+      font-size: 13px;
+      font-weight: 400;
+      height: 48px;
+      padding: 0 var(--cds-spacing-05);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      display: flex;
+      align-items: center;
+    }
+
+    .sheet-tab:hover { background-color: #e5e5e5; color: var(--cds-text-primary); }
+    .sheet-tab.active {
+      font-weight: 600;
+      color: var(--cds-text-primary);
+      border-bottom-color: var(--cds-interactive-01);
+      background-color: #ffffff;
+    }
+
+    /* Scrollable Content Pane */
+    .sheet-body-scroll {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 32px;
+    }
+
+    .sheet-tab-panel {
+      display: none;
+    }
+
+    .sheet-tab-panel.active {
+      display: block;
+    }
+
+    /* Specific specs styling inside the sheets */
+    .sandbox-preview-frame {
+      border: 1px solid #c6c6c6;
+      background-color: #f4f4f4;
+      padding: 24px;
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .spec-metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .spec-metadata-item {
+      background-color: #f4f4f4;
+      padding: 12px 16px;
+      border-left: 3px solid var(--cds-interactive-01);
+    }
+
+    .spec-label { font-size: 11px; font-weight: 700; color: var(--cds-text-helper); text-transform: uppercase; letter-spacing: 0.5px; }
+    .spec-value { font-size: 14px; color: var(--cds-text-primary); margin-top: 4px; font-weight: 600; }
+
+    /* Footer Brand Badge */
+    .app-brand-footer {
+      border-top: 1px solid var(--cds-border-subtle-01);
+      padding: var(--cds-spacing-05);
+      margin-top: var(--cds-spacing-07);
+      text-align: center;
+      font-size: 11px;
+      color: var(--cds-text-helper);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-frame">
+    
+    <!-- Top Global Carbon Header -->
+    <header class="cds-global-header">
+      <div style="display: flex; align-items: center; gap: 24px; height: 100%;">
+        <a href="Carbon_Product_Gallery_Strategic_Proposal.html" style="text-decoration: none; color: #ffffff; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; display: flex; align-items: center; height: 100%;">
+          IBM Carbon <span style="font-weight: 300; color: #a8a8a8; margin-left: 4px;">Product Gallery</span>
+        </a>
+        <nav style="display: flex; height: 100%; align-items: center; margin-left: 16px;">
+          <a class="header-nav-link" href="Carbon_Product_Gallery_Strategic_Proposal.html">Proposal & Research</a>
+          <a class="header-nav-link active" href="Product_Gallery_Discovery_Homepage.html">Gallery Hub</a>
+          <a class="header-nav-link" href="Visual_Gallery_Layout_Explorations.html">Gallery Layout Options</a>
+          <a class="header-nav-link" href="V12_Migration_Layout_Explorations.html">V12 Migration Explorer</a>
+        </nav>
+      </div>
+      <div style="font-size: 11px; color: #a8a8a8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">"Carbon in Action" MVP</div>
+    </header>
+
+    <!-- Hero Spotlight Arena -->
+    <section class="hero-arena">
+      <div class="hero-container">
+        <div class="hero-tag">IBM Design System Hub</div>
+        <h1 class="hero-title">See How IBM Builds with Carbon</h1>
+        <p class="hero-subtitle">Explore a living directory of production screens, custom component configurations, and real-world compliance decisions from active IBM product teams.</p>
+        
+        <!-- Omnibar Search -->
+        <div class="search-wrapper">
+          <div class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M15 14.3l-3.3-3.3c.9-1.1 1.4-2.5 1.4-4 0-3.6-2.9-6.5-6.5-6.5S.1 3.4.1 7s2.9 6.5 6.5 6.5c1.5 0 2.9-.5 4-1.4l3.3 3.3.7-.7zM6.6 12.5C3.5 12.5 1 10 1 7s2.5-5.5 5.5-5.5 5.5 2.5 5.5 5.5-2.5 5.5-5.5 5.5z"/>
+            </svg>
+          </div>
+          <input type="text" class="search-input" id="gallerySearchInput" oninput="executeSearch()" placeholder="Search layouts, components, products, or slack channels...">
+        </div>
+        
+        <!-- Popular Keywords -->
+        <div class="popular-tags-row">
+          <span>Popular keywords:</span>
+          <button class="popular-search-tag" onclick="injectKeyword('watsonx')">watsonx.ai</button>
+          <span>•</span>
+          <button class="popular-search-tag" onclick="injectKeyword('data table')">high-density table</button>
+          <span>•</span>
+          <button class="popular-search-tag" onclick="injectKeyword('wizard')">wizard setups</button>
+          <span>•</span>
+          <button class="popular-search-tag" onclick="injectKeyword('dark mode')">dark mode telemetry</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Spotlight Banner -->
+    <section class="editorial-spotlight">
+      <div class="spotlight-container">
+        <div class="spotlight-image-panel">
+          <span class="spotlight-badge">AI Editorial Spotlight</span>
+          <div style="text-align: center; color: var(--cds-text-secondary);">
+            <div style="font-size: 32px; font-weight: 300; color: #161616; margin-bottom: 8px;">watsonx.ai Studio</div>
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Node Graph Canvas Interface</div>
+          </div>
+        </div>
+        <div>
+          <h2 class="spotlight-title">Reimagining the Canvas for Generative AI Builders</h2>
+          <p class="spotlight-text">"To build model tuning environments, our engineers had to break free from standard document structures and build an open canvas space. Discover how the Studio team customized the Carbon UI Shell and Side Panel component variants to configure node graph parameters."</p>
+          <button class="spotlight-action-btn" onclick="launchInspect('sub_V12_canvas_01')">Dive Deep into Spotlight</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Directory -->
+    <div class="discovery-workspace">
+      
+      <!-- Left side: Filter Panel -->
+      <aside class="filter-drawer">
+        <div class="filter-section">
+          <h3 class="filter-section-title">Business Unit</h3>
+          <label class="filter-checkbox-label"><input type="checkbox" value="watsonx" onchange="executeSearch()"> watsonx.ai / governance</label>
+          <label class="filter-checkbox-label"><input type="checkbox" value="IBM Cloud" onchange="executeSearch()"> IBM Cloud Console</label>
+          <label class="filter-checkbox-label"><input type="checkbox" value="Storage" onchange="executeSearch()"> Storage Scale / Systems</label>
+          <label class="filter-checkbox-label"><input type="checkbox" value="Security" onchange="executeSearch()"> Security Verify / QRadar</label>
+        </div>
+
+        <div class="filter-section">
+          <h3 class="filter-section-title">Layout / Category</h3>
+          <label class="filter-checkbox-label"><input type="checkbox" value="Dashboard" onchange="executeSearch()"> Dashboards</label>
+          <label class="filter-checkbox-label"><input type="checkbox" value="Conversational" onchange="executeSearch()"> Conversational Interfaces</label>
+          <label class="filter-checkbox-label"><input type="checkbox" value="Wizard" onchange="executeSearch()"> Provisioning Wizards</label>
+          <label class="filter-checkbox-label"><input type="checkbox" value="Table" onchange="executeSearch()"> High-Density Tables</label>
+        </div>
+
+        <div class="filter-section">
+          <h3 class="filter-section-title">Customization Index</h3>
+          <label class="filter-checkbox-label"><input type="checkbox" value="Standard" onchange="executeSearch()"> Standard (No Modifications)</label>
+          <label class="filter-checkbox-label"><input type="checkbox" value="Extended" onchange="executeSearch()"> Extended Custom Styling</label>
+          <label class="filter-checkbox-label"><input type="checkbox" value="Fork" onchange="executeSearch()"> Heavy Forked Variants</label>
+        </div>
+      </aside>
+
+      <!-- Right side: Pinterest Board Grid -->
+      <section class="gallery-board">
+        <div class="gallery-header-controls">
+          <span class="results-count" id="resultsCount">Loading assets...</span>
+          <div>
+            <span style="font-size: 12.5px; color: var(--cds-text-secondary); margin-right: 8px;">Sort by:</span>
+            <select class="sort-dropdown" id="sortControl" onchange="executeSearch()">
+              <option value="views">Most Viewed</option>
+              <option value="likes">Most Liked</option>
+              <option value="title">Alphabetical (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- The Pinterest Cards Grid -->
+        <div class="grid-container" id="cardsGrid">
+          <!-- DYNAMIC CONTENT RENDERED IN SCRIPT -->
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Global Footer -->
+    <footer class="app-brand-footer">
+      Made with IBM Bob
+    </footer>
+
+  </div>
+
+  <!-- ========================================== -->
+  /* THE SHEET COMPONENT OVERLAY                */
+  <!-- ========================================== */
+  <div class="inspect-overlay" id="inspectOverlay" onclick="closeInspect(event)">
+    <div class="inspect-sheet" onclick="event.stopPropagation()">
+      
+      <!-- Sheet Header -->
+      <div class="sheet-header">
+        <div class="sheet-header-left">
+          <span class="sheet-breadcrumbs" id="sheetCategory">Component Library</span>
+          <h2 class="sheet-title" id="sheetTitle">Database instance dashboard</h2>
+        </div>
+        <button class="sheet-close-btn" onclick="closeInspect(null)">&times;</button>
+      </div>
+
+      <!-- Sheet Tabs switcher -->
+      <div class="sheet-tabs-row">
+        <button class="sheet-tab active" onclick="switchSheetTab(event, 'tab-overview')">Overview</button>
+        <button class="sheet-tab" onclick="switchSheetTab(event, 'tab-specs')">Design Specs</button>
+        <button class="sheet-tab" onclick="switchSheetTab(event, 'tab-a11y')">Accessibility Audit</button>
+        <button class="sheet-tab" onclick="switchSheetTab(event, 'tab-peer')">Peer Contact</button>
+      </div>
+
+      <!-- Sheet Body -->
+      <div class="sheet-body-scroll" id="sheetBody">
+        
+        <!-- PANEL 1: OVERVIEW -->
+        <div class="sheet-tab-panel active" id="tab-overview">
+          <div class="sandbox-preview-frame">
+            <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--cds-text-helper); margin-bottom: 12px; display: flex; justify-content: space-between;">
+              <span>Mock-Screen Representation</span>
+              <span id="sheetCarbonVersion" class="badge-tag badge-v12">V12 Active</span>
+            </div>
+            <div id="sheetScreenshotPlaceholder" style="background-color: #ffffff; padding: 24px; border: 1px solid #e0e0e0;">
+              <!-- Dynamic mock screen goes here -->
+            </div>
+          </div>
+          <h4 style="font-size: 15px; margin-top: 0; margin-bottom: 8px;">Contextual Rationale</h4>
+          <p class="cds--type-body-long-01" id="sheetDesc" style="font-size: 13.5px; line-height: 1.7; color: var(--cds-text-secondary);">
+            Dynamic description text.
+          </p>
+        </div>
+
+        <!-- PANEL 2: SPECS -->
+        <div class="sheet-tab-panel" id="tab-specs">
+          <h4 style="font-size: 15px; margin-top: 0; margin-bottom: 12px;">Component-Level Customization Notes</h4>
+          <div class="spec-metadata-grid">
+            <div class="spec-metadata-item">
+              <span class="spec-label">Primary Framework</span>
+              <span class="spec-value" id="sheetFramework">React 1.45.0</span>
+            </div>
+            <div class="spec-metadata-item">
+              <span class="spec-label">Customization Index</span>
+              <span class="spec-value" id="sheetCustomIndex">Extended Custom Styling</span>
+            </div>
+          </div>
+          <div style="margin-top: 24px; background-color: #f4f4f4; padding: 16px; border-left: 3px solid var(--cds-interactive-02);">
+            <h5 style="margin-top: 0; margin-bottom: 6px; font-size: 12.5px;">CSS Override Directives</h5>
+            <p style="font-size: 12px; color: var(--cds-text-secondary); line-height: 1.5; margin: 0;" id="sheetOverrideNotes">
+              Specific CSS classes used to achieve table density calibrations.
+            </p>
+          </div>
+        </div>
+
+        <!-- PANEL 3: ACCESSIBILITY -->
+        <div class="sheet-tab-panel" id="tab-a11y">
+          <h4 style="font-size: 15px; margin-top: 0; margin-bottom: 12px;">Under-The-Hood WCAG Compliance Checklist</h4>
+          <ul style="list-style: none; padding-left: 0; font-size: 13px; line-height: 2;">
+            <li id="sheetA11yKeyboard">✅ Keyboard-Focus Loop Verified</li>
+            <li id="sheetA11yColor">✅ Color Contrast Ratio Verified (4.5:1 compliant)</li>
+            <li id="sheetA11yReader">✅ Screen Reader ARIA Semantics Verified</li>
+          </ul>
+        </div>
+
+        <!-- PANEL 4: PEER CONTACT -->
+        <div class="sheet-tab-panel" id="tab-peer">
+          <h4 style="font-size: 15px; margin-top: 0; margin-bottom: 8px;">Connect with the Original Builders</h4>
+          <p style="font-size: 13px; color: var(--cds-text-secondary); line-height: 1.6; margin-bottom: 24px;">
+            Speed up your implementation timelines by directly contacting the team that designed and compiled this screen. Ask questions about parameters, decision-making, and Figma alignments.
+          </p>
+          <div style="background-color: #edf5ff; border: 1px solid #d0e2ff; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="font-size: 13.5px; font-weight: 600;" id="sheetContributorName">Jane Doe (Design Lead)</div>
+            <div style="font-size: 12px; color: #002d9c;" id="sheetContributorSlack">Team Slack Channel: #watsonx-ai-design</div>
+            <button class="spotlight-action-btn" style="background-color: #0f62fe; width: fit-content; margin-top: 8px;" onclick="simulateSlackChat()">Chat on Slack</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // THE COMPREHENSIVE RESOURCE INVENTORY (20 Items)
+    // ==========================================
+    const registry = [
+      {
+        id: "sub_V12_database_01",
+        title: "Database instance dashboard",
+        product: "IBM Cloud Console",
+        bu: "IBM Cloud",
+        category: "Dashboard",
+        platform: "SaaS / Console",
+        customization: "Standard",
+        likes: 242,
+        views: 1205,
+        desc: "Optimized status telemetry grids with tight 38px row data table compressions, custom spacing tokens, and clean outline badges.",
+        framework: "React 18.2",
+        carbonVersion: "v12",
+        components: ["data-table", "tag", "breadcrumb", "button"],
+        overrideNotes: "No style overrides are applied. Standard @carbon/react tables were imported and density='compact' property enabled.",
+        contributor: "Sarah Connor (SaaS Dev)",
+        slack: "#cloud-console-infrastructure",
+        mockHtml: `
+          <div style="border: 1px solid #e0e0e0; padding: 16px; background-color: #ffffff;">
+            <div style="font-size: 11px; color: #525252; margin-bottom: 2px;">infrastructure / server / status</div>
+            <h3 style="font-size: 18px; margin: 0 0 12px 0; font-weight: 400;">Active database instance</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px;">
+              <div style="border: 1px solid #e0e0e0; padding: 10px; background-color: #f4f4f4;">
+                <div style="font-size: 11px; color: #525252;">Cluster health</div>
+                <div style="font-size: 16px; font-weight: 600; color: #da1e28;">Degraded</div>
+              </div>
+              <div style="border: 1px solid #e0e0e0; padding: 10px; background-color: #f4f4f4;">
+                <div style="font-size: 11px; color: #525252;">Connections</div>
+                <div style="font-size: 16px; font-weight: 600;">1,402</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "sub_V12_canvas_01",
+        title: "watsonx.ai studio graph node graph canvas",
+        product: "watsonx.ai",
+        bu: "watsonx",
+        category: "Conversational",
+        platform: "SaaS / Console",
+        customization: "Fork",
+        likes: 412,
+        views: 3102,
+        desc: "Custom-built node configuration side panels that expand inside an open grid workspace, bypassing static column limits to support large model tuning graphs.",
+        framework: "React 18.2",
+        carbonVersion: "v12",
+        components: ["side-panel", "inline-tag", "icon-button"],
+        overrideNotes: "Heavily customized side-panel modules utilizing absolute position coordinates over open canvas views. Focus-ring outlines are doubled for dark mode accessibility.",
+        contributor: "Jane Doe (Design Lead)",
+        slack: "#watsonx-ai-studio",
+        mockHtml: `
+          <div style="border: 1px solid #e0e0e0; padding: 16px; background-color: #161616; color: #ffffff;">
+            <div style="font-size: 11px; color: #a8a8a8; margin-bottom: 2px;">watsonx.ai / canvas / studio</div>
+            <h3 style="font-size: 18px; margin: 0 0 12px 0; font-weight: 300;">Model Tuning Pipeline</h3>
+            <div style="border: 1px dashed #393939; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #a8a8a8;">
+              [ Node Connector dots on 8px Grid ]
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "sub_V12_chat_01",
+        title: "watsonx conversational assistant agent interface",
+        product: "watsonx.ai",
+        bu: "watsonx",
+        category: "Conversational",
+        platform: "SaaS / Console",
+        customization: "Extended",
+        likes: 188,
+        views: 940,
+        desc: "High-fidelity conversational dialog screen with 16px rounded speech nodes, expressive border tag markers, and sleek prompt panels.",
+        framework: "Web Components",
+        carbonVersion: "v12",
+        components: ["tile", "tag", "text-input"],
+        overrideNotes: "Extended default Carbon Tiles with custom border-radius properties to align conversational speech blocks softer and maximize readability.",
+        contributor: "Alex Mercer (Web Dev)",
+        slack: "#watsonx-assistant-core",
+        mockHtml: `
+          <div style="border: 1px solid #e0e0e0; padding: 16px; background-color: #ffffff;">
+            <div style="background-color: #f4f4f4; padding: 10px; border-radius: 16px; max-width: 80%; font-size: 12px; margin-bottom: 8px;">
+              Hello, I am watsonx. How can I assist you today?
+            </div>
+            <div style="background-color: #edf5ff; padding: 10px; border-radius: 16px 16px 0 16px; max-width: 80%; font-size: 12px; margin-left: auto;">
+              I need to provision a new db-node replica.
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "sub_V12_table_01",
+        title: "High-density asset monitor table grid",
+        product: "Storage Scale",
+        bu: "Storage",
+        category: "Table",
+        platform: "On-Premise Operators",
+        customization: "Extended",
+        likes: 295,
+        views: 1450,
+        desc: "High-density data tables utilizing compact 38px rows, standardized Sentence Case headings, and custom multiline checkbox action drawers.",
+        framework: "React 18.2",
+        carbonVersion: "v12",
+        components: ["data-table", "checkbox", "dropdown"],
+        overrideNotes: "Table padding values overridden inside companion SCSS. Column header weights are standardized to semi-bold to enhance text contrast.",
+        contributor: "Marcus Aurelius (Developer)",
+        slack: "#storage-grid-monitoring",
+        mockHtml: `
+          <div style="border: 1px solid #e0e0e0; background-color: #ffffff; padding: 16px;">
+            <div style="background-color: #0f62fe; color: #ffffff; padding: 8px 12px; font-size: 11px; font-weight: 600; display: flex; justify-content: space-between;">
+              <span>2 items selected</span>
+              <span style="text-decoration: underline; cursor: pointer;">Delete all</span>
+            </div>
+            <div style="font-size: 12px; padding: 8px; border-bottom: 1px solid #e0e0e0; font-weight: 600; background-color: #f4f4f4;">
+              <span>Host name</span> | <span>Location</span> | <span>Status</span>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "sub_V12_wizard_01",
+        title: "Multi-step cluster deployment setup wizard",
+        product: "IBM Cloud Console",
+        bu: "IBM Cloud",
+        category: "Wizard",
+        platform: "SaaS / Console",
+        customization: "Standard",
+        likes: 154,
+        views: 820,
+        desc: "Sleek cluster deployment process displaying left-hand multi-step linear setups, integrated form checks, and compact bottom action menus.",
+        framework: "React 18.2",
+        carbonVersion: "v12",
+        components: ["progress-indicator", "text-input", "button"],
+        overrideNotes: "Standard component implementations. Auto-focus is programmatically driven onto step titles during linear stage progressions.",
+        contributor: "David Miller (Cloud Dev)",
+        slack: "#cloud-provisioning-wizards",
+        mockHtml: `
+          <div style="border: 1px solid #e0e0e0; padding: 16px; background-color: #ffffff;">
+            <div style="display: flex; gap: 24px;">
+              <div style="width: 120px; font-size: 11px; border-right: 1px solid #e0e0e0;">
+                <div style="color: #0f62fe; font-weight: 600; margin-bottom: 8px;">1. Cluster details</div>
+                <div style="color: #525252;">2. Storage setup</div>
+              </div>
+              <div style="flex-grow: 1;">
+                <label style="font-size: 11px; display: block; margin-bottom: 4px;">Cluster name</label>
+                <input type="text" value="Primary-Dal10-Server" style="width: 100%; height: 32px; padding: 4px; font-size: 12px; border: 1px solid #8d8d8d;">
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "sub_V12_verify_01",
+        title: "Security verify user profiles configurations",
+        product: "Security Verify",
+        bu: "Security",
+        category: "Settings",
+        platform: "SaaS / Console",
+        customization: "Standard",
+        likes: 98,
+        views: 410,
+        desc: "Accessible and clean access parameters control layouts, with structured list directories and outline tag status controls.",
+        framework: "Vanilla JS",
+        carbonVersion: "v12",
+        components: ["structured-list", "tag", "search"],
+        overrideNotes: "Borders inside lists are customized to contrast compliant Gray-20 specifications.",
+        contributor: "Helena Rostova (Verify Lead)",
+        slack: "#security-verify-profiles",
+        mockHtml: `
+          <div style="border: 1px solid #e0e0e0; padding: 16px; background-color: #ffffff;">
+            <h4 style="font-size: 14px; margin: 0 0 10px 0;">Tenant Access Groups</h4>
+            <div style="font-size: 12px; padding: 6px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between;">
+              <span>Administrator</span>
+              <span style="font-size: 10px; font-weight: 700; color: #0f6224; background-color: #defbe6; padding: 2px 6px; border-radius: 10px;">Active</span>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "sub_V12_qradar_01",
+        title: "QRadar firewall security incidents list grid",
+        product: "Security Verify",
+        bu: "Security",
+        category: "Table",
+        platform: "On-Premise Operators",
+        customization: "Fork",
+        likes: 310,
+        views: 1840,
+        desc: "Ultra-condensed incident tracking layout using compact data fields and inline alert overlays to assist reaction times under critical firewall emergencies.",
+        framework: "React 18.2",
+        carbonVersion: "v12",
+        components: ["data-table", "inline-notification", "tag"],
+        overrideNotes: "Heavily customized grid structures, forcing 32px row heights and compressing column margins down to 10px to accommodate full payload values.",
+        contributor: "John Watson (Incident Dev)",
+        slack: "#qradar-incident-response",
+        mockHtml: `
+          <div style="border: 1px solid #e0e0e0; padding: 16px; background-color: #ffffff;">
+            <div style="border-left: 4px solid #da1e28; background-color: #fff0f1; padding: 8px; font-size: 11px; margin-bottom: 8px;">
+              <strong>High Severity Incident:</strong> Firewall block violation at Dal10 node.
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "sub_V12_satellite_01",
+        title: "IBM Cloud Satellite Cluster Control Dashboard",
+        product: "IBM Cloud Console",
+        bu: "IBM Cloud",
+        category: "Dashboard",
+        platform: "SaaS / Console",
+        customization: "Standard",
+        likes: 215,
+        views: 1090,
+        desc: "Comprehensive active network map and cluster nodes health metrics, combining custom status components and responsive accordions.",
+        framework: "Web Components",
+        carbonVersion: "v12",
+        components: ["accordion", "tag", "button"],
+        overrideNotes: "Standard Web Components are implemented. Standard focus indicators are verified on dark layouts.",
+        contributor: "Clara Oswald (Cloud Architecture)",
+        slack: "#satellite-cluster-control",
+        mockHtml: `
+          <div style="border: 1px solid #e0e0e0; padding: 16px; background-color: #ffffff;">
+            <div style="font-size: 11px; color: #525252; margin-bottom: 2px;">Satellite / Control / Dashboard</div>
+            <h3 style="font-size: 16px; margin: 0 0 12px 0;">Cluster satellite-dal10-01</h3>
+          </div>
+        `
+      }
+    ];
+
+    // ==========================================
+    // CONTROLLER & RENDER ENGINE
+    // ==========================================
+    function renderRegistry(items) {
+      const grid = document.getElementById("cardsGrid");
+      const countLabel = document.getElementById("resultsCount");
+      
+      grid.innerHTML = "";
+      countLabel.textContent = `${items.length} Production Screens Found`;
+
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 48px; background-color: #ffffff; border: 1px solid var(--cds-border-subtle-01);">
+            <div style="font-size: 24px; font-weight: 300; margin-bottom: 8px; color: #161616;">No matching screens discovered</div>
+            <div style="font-size: 13px; color: var(--cds-text-secondary);">Try clearing your active filters or query term to expand search.</div>
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach(item => {
+        // Create component labels for hover overlay
+        const compTags = item.components.map(c => `<span class="overlay-comp-tag">${c}</span>`).join("");
+        
+        // Define Customization Index badge class
+        const badgeClass = item.customization === "Fork" ? "badge-fork" : item.customization === "Extended" ? "badge-react" : "badge-std";
+        
+        const card = document.createElement("div");
+        card.className = "showcase-card";
+        card.onclick = () => launchInspect(item.id);
+        card.innerHTML = `
+          <div class="card-visual-header">
+            <div class="card-visual-mockup">
+              ${item.mockHtml}
+            </div>
+            <div class="card-hover-overlay">
+              ${compTags}
+            </div>
+          </div>
+          <div class="card-meta-content">
+            <div class="card-category">${item.category}  •  ${item.platform}</div>
+            <h4 class="card-title">${item.title}</h4>
+            <div class="card-product-tagline">${item.product} (${item.bu})</div>
+            <div class="card-badge-row">
+              <span class="badge-tag badge-v12">V12 Active</span>
+              <span class="badge-tag ${badgeClass}">${item.customization}</span>
+            </div>
+            <div class="card-stats-row">
+              <div class="card-stats-left">
+                <span>♥ ${item.likes}</span>
+                <span>O ${item.views}</span>
+              </div>
+              <span>${item.framework}</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Dynamic search, multiselect category filtering, and metadata sorting algorithm
+    function executeSearch() {
+      const searchQuery = document.getElementById("gallerySearchInput").value.toLowerCase();
+      const sortBy = document.getElementById("sortControl").value;
+
+      // Capture checked inputs
+      const activeBUs = Array.from(document.querySelectorAll('.filter-drawer input[value="watsonx"], .filter-drawer input[value="IBM Cloud"], .filter-drawer input[value="Storage"], .filter-drawer input[value="Security"]'))
+                            .filter(i => i.checked).map(i => i.value);
+
+      const activeCategories = Array.from(document.querySelectorAll('.filter-drawer input[value="Dashboard"], .filter-drawer input[value="Conversational"], .filter-drawer input[value="Wizard"], .filter-drawer input[value="Table"]'))
+                                    .filter(i => i.checked).map(i => i.value);
+
+      const activeCustomizations = Array.from(document.querySelectorAll('.filter-drawer input[value="Standard"], .filter-drawer input[value="Extended"], .filter-drawer input[value="Fork"]'))
+                                        .filter(i => i.checked).map(i => i.value);
+
+      let filtered = registry.filter(item => {
+        // Query check
+        const matchQuery = item.title.toLowerCase().includes(searchQuery) || 
+                           item.desc.toLowerCase().includes(searchQuery) ||
+                           item.components.some(c => c.includes(searchQuery)) ||
+                           item.product.toLowerCase().includes(searchQuery);
+
+        // BU check
+        const matchBU = activeBUs.length === 0 || activeBUs.includes(item.bu);
+
+        // Category check
+        const matchCategory = activeCategories.length === 0 || activeCategories.includes(item.category);
+
+        // Customization check
+        const matchCustom = activeCustomizations.length === 0 || activeCustomizations.includes(item.customization);
+
+        return matchQuery && matchBU && matchCategory && matchCustom;
+      });
+
+      // Sorting
+      if (sortBy === "likes") {
+        filtered.sort((a, b) => b.likes - a.likes);
+      } else if (sortBy === "views") {
+        filtered.sort((a, b) => b.views - a.views);
+      } else if (sortBy === "title") {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      renderRegistry(filtered);
+    }
+
+    // Helper functions
+    function injectKeyword(kw) {
+      document.getElementById("gallerySearchInput").value = kw;
+      executeSearch();
+    }
+
+    // ==========================================
+    // MODAL SHEET INTERACTION HANDLERS
+    // ==========================================
+    let currentInspectItem = null;
+
+    function launchInspect(id) {
+      const item = registry.find(r => r.id === id);
+      if (!item) return;
+
+      currentInspectItem = item;
+      
+      // Populate labels
+      document.getElementById("sheetCategory").textContent = `${item.category}  •  ${item.platform}`;
+      document.getElementById("sheetTitle").textContent = item.title;
+      document.getElementById("sheetDesc").textContent = item.desc;
+      document.getElementById("sheetFramework").textContent = item.framework;
+      document.getElementById("sheetCustomIndex").textContent = item.customization;
+      document.getElementById("sheetOverrideNotes").textContent = item.overrideNotes;
+      document.getElementById("sheetContributorName").textContent = item.contributor;
+      document.getElementById("sheetContributorSlack").textContent = `Slack contact details: ${item.slack}`;
+      document.getElementById("sheetScreenshotPlaceholder").innerHTML = item.mockHtml;
+
+      // Handle compliance logs
+      document.getElementById("sheetA11yKeyboard").textContent = item.customization === "Fork" ? "⚠️ Custom focus coordinates mapping verified (exceptions logged)" : "✅ Keyboard-Focus Loop Verified";
+      document.getElementById("sheetA11yColor").textContent = item.customization === "Fork" ? "✅ Custom Dark Contrast Ratio Verified (5:1 compliant)" : "✅ Color Contrast Ratio Verified (4.5:1 compliant)";
+
+      // Reset active tabs
+      document.querySelectorAll(".sheet-tab").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".sheet-tab-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(".sheet-tab").classList.add("active");
+      document.getElementById("tab-overview").classList.add("active");
+
+      // Open Modal Overlay
+      document.getElementById("inspectOverlay").classList.add("active");
+    }
+
+    function closeInspect(e) {
+      if (e && e.target !== document.getElementById("inspectOverlay")) return;
+      document.getElementById("inspectOverlay").classList.remove("active");
+    }
+
+    function switchSheetTab(e, panelId) {
+      document.querySelectorAll(".sheet-tab").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".sheet-tab-panel").forEach(p => p.classList.remove("active"));
+
+      e.currentTarget.classList.add("active");
+      document.getElementById(panelId).classList.add("active");
+    }
+
+    function simulateSlackChat() {
+      if (!currentInspectItem) return;
+      alert(`Connecting to IBM slack workspace...\nLaunching channel: ${currentInspectItem.slack} to discuss decision parameters with ${currentInspectItem.contributor}!`);
+    }
+
+    // Initial render trigger
+    window.onload = () => {
+      renderRegistry(registry);
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en" data-carbon-theme="g10">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual Gallery Layout Explorations — Option A Prototype</title>
+  
+  <!-- Load official Carbon Stylesheet for a high-fidelity IBM look and feel -->
+  <link rel="stylesheet" href="https://unpkg.com/@carbon/styles/css/styles.css">
+  
+  <style>
+    /* Styling variables and overrides matching Carbon design standards */
+    :root {
+      --cds-interactive-01: #0f62fe; /* Carbon Blue */
+      --cds-interactive-02: #8a3ffc; /* Carbon Purple */
+      --cds-support-success: #24a148; /* Carbon Green */
+      --cds-text-primary: #161616;
+      --cds-text-secondary: #525252;
+      --cds-text-helper: #6f6f6f;
+      --cds-background: #ffffff;
+      --cds-field-01: #f4f4f4;
+      --cds-border-subtle-01: #e0e0e0;
+      --cds-spacing-04: 0.75rem;   /* 12px spacing */
+      --cds-spacing-05: 1.5rem;    /* 24px spacing */
+      --cds-spacing-06: 2.25rem;   /* 36px spacing */
+      --cds-spacing-07: 3rem;      /* 48px spacing */
+      --cds-spacing-08: 4.5rem;    /* 72px spacing */
+    }
+
+    body {
+      background-color: #f4f4f4;
+      color: var(--cds-text-primary);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Core Application Frame */
+    .app-frame {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top Navigation bar containing layout switcher tabs */
+    .nav-bar {
+      background-color: #161616;
+      color: #ffffff;
+      padding: 0 var(--cds-spacing-05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 64px;
+      border-bottom: 1px solid #393939;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+    }
+
+    .brand-title span {
+      font-weight: 300;
+      color: #a8a8a8;
+    }
+
+    /* Tabs switcher */
+    .layout-switcher {
+      display: flex;
+      height: 100%;
+      align-items: flex-end;
+    }
+
+    .switcher-tab {
+      background: transparent;
+      border: none;
+      color: #a8a8a8;
+      padding: 0 var(--cds-spacing-05);
+      font-size: 13.5px;
+      font-weight: 400;
+      height: 48px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      border-bottom: 3px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .switcher-tab:hover {
+      background-color: #262626;
+      color: #ffffff;
+    }
+
+    .switcher-tab.active {
+      color: #ffffff;
+      border-bottom-color: var(--cds-interactive-01);
+      font-weight: 600;
+      background-color: #262626;
+    }
+
+    /* Main Workspace Canvas area */
+    .workspace-area {
+      flex-grow: 1;
+      overflow: hidden;
+      position: relative;
+      background-color: #f4f4f4;
+    }
+
+    /* Base Layout Container (Hidden by default unless active) */
+    .exploration-canvas {
+      display: none;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .exploration-canvas.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* ========================================== */
+    /* EXPLORATION 1: Dual-Canvas Split View styles */
+    /* ========================================== */
+    .split-pane-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .column-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      background-color: #ffffff;
+      border-right: 1px solid var(--cds-border-subtle-01);
+      padding: var(--cds-spacing-05);
+      position: relative;
+    }
+
+    .column-panel.v11-bg {
+      background-color: #f4f4f4;
+    }
+
+    .column-panel-header {
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding-bottom: var(--cds-spacing-04);
+      margin-bottom: var(--cds-spacing-05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .column-title {
+      font-size: 16px;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .badge-v11 {
+      background-color: #393939;
+      color: #ffffff;
+    }
+
+    .badge-v12 {
+      background-color: var(--cds-interactive-01);
+      color: #ffffff;
+    }
+
+    /* Highlighting counterparts on hover */
+    .highlightable-node {
+      border: 2px dashed transparent;
+      padding: 12px;
+      margin-bottom: var(--cds-spacing-04);
+      transition: all 0.15s ease;
+      cursor: help;
+    }
+
+    .highlightable-node:hover, .highlightable-node.hover-active {
+      border-color: var(--cds-interactive-01);
+      background-color: #edf5ff;
+    }
+
+    /* ========================================== */
+    /* EXPLORATION 2: Interactive Hotspots styles */
+    /* ========================================== */
+    .hotspot-layout {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .visual-viewport {
+      flex-grow: 1;
+      height: 100%;
+      overflow: auto;
+      padding: var(--cds-spacing-06);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .mock-canvas-container {
+      background-color: #ffffff;
+      border: 1px solid var(--cds-border-subtle-01);
+      width: 600px;
+      padding: var(--cds-spacing-06);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      position: relative;
+    }
+
+    /* Glowing hotspot points */
+    .interactive-hotspot {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background-color: var(--cds-interactive-01);
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 50;
+      box-shadow: 0 0 10px rgba(15, 98, 254, 0.5);
+      animation: pulse-glow 2s infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    @keyframes pulse-glow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(15, 98, 254, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(15, 98, 254, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(15, 98, 254, 0);
+      }
+    }
+
+    .interactive-hotspot:hover {
+      background-color: var(--cds-interactive-02);
+      transform: scale(1.1);
+    }
+
+    /* Side details drawer slide-out */
+    .details-drawer {
+      width: 320px;
+      height: 100%;
+      background-color: #ffffff;
+      border-left: 1px solid var(--cds-border-subtle-01);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease-in-out;
+      overflow-y: auto;
+      padding: var(--cds-spacing-05);
+    }
+
+    .details-drawer-header {
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding-bottom: var(--cds-spacing-04);
+      margin-bottom: var(--cds-spacing-05);
+    }
+
+    .drawer-empty-state {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      text-align: center;
+      color: var(--cds-text-helper);
+      padding: var(--cds-spacing-05);
+    }
+
+    .drawer-content {
+      display: none;
+    }
+
+    .drawer-content.active {
+      display: block;
+    }
+
+    .mini-v11-preview {
+      background-color: #f4f4f4;
+      border: 1px dashed var(--cds-border-subtle-01);
+      padding: 12px;
+      margin-top: var(--cds-spacing-04);
+      font-size: 12px;
+    }
+
+    /* ========================================== */
+    /* EXPLORATION 3: Guided Stepper Carousel styles */
+    /* ========================================== */
+    .stepper-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .stepper-control-panel {
+      background-color: #ffffff;
+      border-right: 1px solid var(--cds-border-subtle-01);
+      height: 100%;
+      padding: var(--cds-spacing-05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+    }
+
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      margin-bottom: var(--cds-spacing-05);
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--cds-border-subtle-01);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 12px;
+      background-color: #ffffff;
+    }
+
+    .step-item.active .step-number {
+      border-color: var(--cds-interactive-01);
+      background-color: var(--cds-interactive-01);
+      color: #ffffff;
+    }
+
+    .step-item.completed .step-number {
+      border-color: var(--cds-support-success);
+      background-color: var(--cds-support-success);
+      color: #ffffff;
+    }
+
+    .step-title {
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .carousel-actions-row {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--cds-border-subtle-01);
+      padding-top: var(--cds-spacing-05);
+      margin-top: var(--cds-spacing-05);
+    }
+
+    .stepper-view {
+      flex-grow: 1;
+      height: 100%;
+      overflow: hidden;
+      padding: var(--cds-spacing-06);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Floating annotation focus box over component in active step */
+    .focus-overlay-box {
+      position: absolute;
+      border: 3px solid var(--cds-interactive-02);
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border-radius: 4px;
+    }
+
+    /* MOCK SCREEN COMMON ELEMENTS */
+    .mock-header {
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .mock-title {
+      font-size: 18px;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .mock-breadcrumbs {
+      font-size: 11px;
+      color: #525252;
+      margin-bottom: 2px;
+    }
+
+    .mock-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .mock-card {
+      border: 1px solid #e0e0e0;
+      background-color: #ffffff;
+      padding: 12px;
+    }
+
+    .mock-card-label {
+      font-size: 11px;
+      color: #525252;
+      margin-bottom: 4px;
+    }
+
+    .mock-card-value {
+      font-size: 20px;
+      font-weight: 300;
+    }
+
+    .mock-button {
+      background-color: var(--cds-interactive-01);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mock-status-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+
+    /* V11 Speciics inside components */
+    .v11-screen .mock-card {
+      border-radius: 0;
+    }
+
+    .v11-screen .mock-button {
+      padding: 12px 20px;
+      font-size: 13.5px;
+    }
+
+    .v11-screen .mock-status-badge {
+      background-color: #e0e0e0;
+      color: #161616;
+      border-radius: 0;
+      text-transform: lowercase;
+      font-weight: 500;
+    }
+
+    /* V12 Specs inside components */
+    .v12-screen .mock-card {
+      background-color: #f4f4f4;
+      border-color: #e0e0e0;
+    }
+
+    .v12-screen .mock-button {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+
+    .v12-screen .mock-status-badge {
+      background-color: #defbe6;
+      color: #0f6224;
+      border: 1px solid #a7f0ba;
+      border-radius: 12px;
+    }
+
+    .mock-row-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 12px;
+    }
+
+    .v12-screen .mock-row-item {
+      padding: 6px 12px;
+    }
+
+    .advice-ad-box {
+      border: 1px solid var(--cds-border-subtle-01);
+      border-top: 3px solid var(--cds-interactive-01);
+      padding: var(--cds-spacing-05);
+      background-color: #ffffff;
+      margin-bottom: var(--cds-spacing-05);
+    }
+  
+    /* Unified Global Navigation Header Styles matching Carbon standards */
+    .cds-global-header {
+      background-color: #161616;
+      height: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      border-bottom: 1px solid #393939;
+      flex-shrink: 0;
+      z-index: 110;
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    }
+    .header-nav-link {
+      color: #c6c6c6;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 400;
+      padding: 0 16px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s ease;
+      border-bottom: 3px solid transparent;
+      box-sizing: border-box;
+    }
+    .header-nav-link:hover {
+      background-color: #262626;
+      color: #ffffff;
+    }
+    .header-nav-link.active {
+      color: #ffffff;
+      font-weight: 600;
+      border-bottom-color: #0f62fe;
+      background-color: #262626;
+    }
+
+  </style>
+</head>
+<body>
+    <!-- Global Carbon UI Shell Header -->
+    <header class="cds-global-header">
+      <div style="display: flex; align-items: center; gap: 24px; height: 100%;">
+        <a href="Carbon_Product_Gallery_Strategic_Proposal.html" style="text-decoration: none; color: #ffffff; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; display: flex; align-items: center; height: 100%;">
+          IBM Carbon <span style="font-weight: 300; color: #a8a8a8; margin-left: 4px;">Product Gallery</span>
+        </a>
+        <nav style="display: flex; height: 100%; align-items: center; margin-left: 16px;">
+          <a class="header-nav-link" href="Carbon_Product_Gallery_Strategic_Proposal.html">Proposal & Research</a>
+          <a class="header-nav-link" href="Product_Gallery_Discovery_Homepage.html">Gallery Hub</a>
+          <a class="header-nav-link active" href="Visual_Gallery_Layout_Explorations.html">Gallery Layout Options</a>
+          <a class="header-nav-link" href="V12_Migration_Layout_Explorations.html">V12 Migration Explorer</a>
+        </nav>
+      </div>
+      <div style="font-size: 11px; color: #a8a8a8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">"Carbon in Action" MVP</div>
+    </header>
+
+  <div class="app-frame">
+    <!-- Top switcher bar -->
+    <nav class="nav-bar">
+      <div class="brand-title">IBM Carbon <span>• Visual Gallery Explorations</span></div>
+      <div class="layout-switcher">
+        <button class="switcher-tab active" onclick="switchLayout('splitView')">Dual-Canvas Split View</button>
+        <button class="switcher-tab" onclick="switchLayout('contextualHotspots')">Contextual Hotspots</button>
+        <button class="switcher-tab" onclick="switchLayout('guidedStepper')">Guided Stepper Carousel</button>
+      </div>
+    </nav>
+
+    <!-- Core interactive layout area -->
+    <div class="workspace-area">
+
+      <!-- ========================================== -->
+      <!-- EXPLORATION 1: Dual-Canvas Split View -->
+      <!-- ========================================== -->
+      <div class="exploration-canvas active" id="canvas-splitView">
+        <div class="split-pane-layout">
+          
+          <!-- V11 Left side -->
+          <div class="column-panel v11-bg">
+            <div class="column-panel-header">
+              <h3 class="column-title">Infrastructure overview</h3>
+              <span class="badge badge-v11">Carbon V11</span>
+            </div>
+            
+            <p class="cds--type-body-long-01" style="font-size: 13px; color: var(--cds-text-secondary); margin-bottom: 16px;">
+              Hover over any dotted section to see its V12 visual evolution highlighted on the right.
+            </p>
+
+            <!-- Screen UI container -->
+            <div class="v11-screen" style="border: 1px solid #c6c6c6; padding: 24px; background-color: #f4f4f4;">
+              
+              <!-- Hover Node 1: Header & Buttons -->
+              <div class="highlightable-node" id="node-v11-header" onmouseenter="linkHover('header', true)" onmouseleave="linkHover('header', false)">
+                <div class="mock-header" style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs">infrastructure / overview</div>
+                    <h2 class="mock-title">Main database instance</h2>
+                  </div>
+                  <button class="mock-button">Provision Node</button>
+                </div>
+              </div>
+
+              <!-- Hover Node 2: Telemetry Card Grid -->
+              <div class="highlightable-node" id="node-v11-cards" onmouseenter="linkHover('cards', true)" onmouseleave="linkHover('cards', false)">
+                <div class="mock-row">
+                  <div class="mock-card">
+                    <div class="mock-card-label">CPU core health</div>
+                    <div class="mock-card-value" style="color: #da1e28;">degraded</div>
+                  </div>
+                  <div class="mock-card">
+                    <div class="mock-card-label">RAM utilization</div>
+                    <div class="mock-card-value">78.4%</div>
+                  </div>
+                  <div class="mock-card">
+                    <div class="mock-card-label">Storage count</div>
+                    <div class="mock-card-value">1,402</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hover Node 3: Structured List Rows -->
+              <div class="highlightable-node" id="node-v11-list" onmouseenter="linkHover('list', true)" onmouseleave="linkHover('list', false)">
+                <div style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: #525252;">Active Database nodes</div>
+                <div class="mock-row-item">
+                  <span>db-primary-dal10</span>
+                  <span class="mock-status-badge">healthy</span>
+                </div>
+                <div class="mock-row-item">
+                  <span>db-replica-lon02</span>
+                  <span class="mock-status-badge">degraded</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- V12 Right side -->
+          <div class="column-panel">
+            <div class="column-panel-header">
+              <h3 class="column-title">Infrastructure overview</h3>
+              <span class="badge badge-v12">Carbon V12</span>
+            </div>
+            
+            <p class="cds--type-body-long-01" style="font-size: 13px; color: var(--cds-text-secondary); margin-bottom: 16px;">
+              Hover over any highlighted segment to inspect the corresponding spacing, density, and case changes.
+            </p>
+
+            <!-- Screen UI container -->
+            <div class="v12-screen" style="border: 1px solid #c6c6c6; padding: 24px; background-color: #ffffff;">
+              
+              <!-- Hover Node 1: Header & Buttons -->
+              <div class="highlightable-node" id="node-v12-header" onmouseenter="linkHover('header', true)" onmouseleave="linkHover('header', false)">
+                <div class="mock-header" style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs">infrastructure / overview</div>
+                    <h2 class="mock-title">Main database instance</h2>
+                  </div>
+                  <button class="mock-button">Provision node</button>
+                </div>
+              </div>
+
+              <!-- Hover Node 2: Telemetry Card Grid -->
+              <div class="highlightable-node" id="node-v12-cards" onmouseenter="linkHover('cards', true)" onmouseleave="linkHover('cards', false)">
+                <div class="mock-row">
+                  <div class="mock-card">
+                    <div class="mock-card-label">CPU core health</div>
+                    <div class="mock-card-value" style="color: #da1e28;">Degraded</div>
+                  </div>
+                  <div class="mock-card">
+                    <div class="mock-card-label">RAM utilization</div>
+                    <div class="mock-card-value">78.4%</div>
+                  </div>
+                  <div class="mock-card">
+                    <div class="mock-card-label">Storage count</div>
+                    <div class="mock-card-value">1,402</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hover Node 3: Structured List Rows -->
+              <div class="highlightable-node" id="node-v12-list" onmouseenter="linkHover('list', true)" onmouseleave="linkHover('list', false)">
+                <div style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: #525252;">Active database nodes</div>
+                <div class="mock-row-item">
+                  <span>db-primary-dal10</span>
+                  <span class="mock-status-badge">Healthy</span>
+                </div>
+                <div class="mock-row-item">
+                  <span>db-replica-lon02</span>
+                  <span class="mock-status-badge" style="background-color: #fff0f1; color: #da1e28; border: 1px solid #ffd7d9;">Degraded</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- EXPLORATION 2: Contextual Hotspots -->
+      <!-- ========================================== -->
+      <div class="exploration-canvas" id="canvas-contextualHotspots">
+        <div class="hotspot-layout">
+          
+          <div class="visual-viewport">
+            
+            <div class="mock-canvas-container v12-screen" id="hotspotMockContainer">
+              <!-- Glowing points positioned relative to screen components -->
+              <div class="interactive-hotspot" style="top: 36px; right: 36px;" onclick="showDrawerContent('hotspot-header')">1</div>
+              <div class="interactive-hotspot" style="top: 130px; left: 160px;" onclick="showDrawerContent('hotspot-cards')">2</div>
+              <div class="interactive-hotspot" style="top: 250px; left: 400px;" onclick="showDrawerContent('hotspot-list')">3</div>
+
+              <!-- Screen visual content -->
+              <div class="mock-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="mock-breadcrumbs">infrastructure / overview</div>
+                  <h2 class="mock-title">Main database instance</h2>
+                </div>
+                <button class="mock-button">Provision node</button>
+              </div>
+
+              <div class="mock-row">
+                <div class="mock-card">
+                  <div class="mock-card-label">CPU core health</div>
+                  <div class="mock-card-value" style="color: #da1e28;">Degraded</div>
+                </div>
+                <div class="mock-card">
+                  <div class="mock-card-label">RAM utilization</div>
+                  <div class="mock-card-value">78.4%</div>
+                </div>
+                <div class="mock-card">
+                  <div class="mock-card-label">Storage count</div>
+                  <div class="mock-card-value">1,402</div>
+                </div>
+              </div>
+
+              <div style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: #525252;">Active database nodes</div>
+              <div class="mock-row-item">
+                <span>db-primary-dal10</span>
+                <span class="mock-status-badge">Healthy</span>
+              </div>
+              <div class="mock-row-item">
+                <span>db-replica-lon02</span>
+                <span class="mock-status-badge" style="background-color: #fff0f1; color: #da1e28; border: 1px solid #ffd7d9;">Degraded</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Drawer panel -->
+          <div class="details-drawer">
+            
+            <div id="drawer-empty" class="drawer-empty-state">
+              <p>Click on any glowing numeric hotspot on the canvas to inspect V11 vs V12 design migrations details.</p>
+            </div>
+
+            <!-- Header Hotspot details -->
+            <div id="drawer-hotspot-header" class="drawer-content">
+              <div class="details-drawer-header">
+                <h4 style="margin: 0; font-size: 16px;">1. Primary buttons &amp; casing</h4>
+                <span class="badge badge-v12" style="margin-top: 4px; display: inline-block;">Layout update</span>
+              </div>
+              
+              <p class="cds--type-body-long-01" style="font-size: 13px; color: var(--cds-text-secondary);">
+                Carbon V12 reduces button height from 48px to 40px to support tighter content density, switching actions text to Sentence Case.
+              </p>
+
+              <div class="mini-v11-preview">
+                <strong>Legacy V11 layout (Before):</strong>
+                <div style="margin-top: 6px; padding: 10px; background: #e0e0e0; font-size: 12px; display: inline-block;">PROVISION NODE</div>
+              </div>
+            </div>
+
+            <!-- Cards Hotspot details -->
+            <div id="drawer-hotspot-cards" class="drawer-content">
+              <div class="details-drawer-header">
+                <h4 style="margin: 0; font-size: 16px;">2. Spacing and card structure</h4>
+                <span class="badge badge-v12" style="margin-top: 4px; display: inline-block;">Token update</span>
+              </div>
+              
+              <p class="cds--type-body-long-01" style="font-size: 13px; color: var(--cds-text-secondary);">
+                V12 monitoring cards use a subtle flat field background (<code>#f4f4f4</code>) with compact padding rules instead of heavy card outlines.
+              </p>
+
+              <div class="mini-v11-preview">
+                <strong>Legacy V11 layout (Before):</strong>
+                <div style="margin-top: 6px; border: 1px solid #e0e0e0; padding: 12px; background: #ffffff; width: 120px;">
+                  <div style="font-size: 10px; color: #525252;">CPU core health</div>
+                  <div style="font-size: 16px; font-weight: 300; color: #da1e28;">degraded</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- List Hotspot details -->
+            <div id="drawer-hotspot-list" class="drawer-content">
+              <div class="details-drawer-header">
+                <h4 style="margin: 0; font-size: 16px;">3. Status badge &amp; list density</h4>
+                <span class="badge badge-v12" style="margin-top: 4px; display: inline-block;">Component design</span>
+              </div>
+              
+              <p class="cds--type-body-long-01" style="font-size: 13px; color: var(--cds-text-secondary);">
+                V12 badge components feature softer pill shapes, supportive colors, and uppercase tags. List items vertical padding has been compressed to 8px.
+              </p>
+
+              <div class="mini-v11-preview">
+                <strong>Legacy V11 layout (Before):</strong>
+                <div style="margin-top: 6px; padding: 12px; background: #ffffff; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; font-size: 11px;">
+                  <span>db-replica-lon02</span>
+                  <span style="background-color: #e0e0e0; padding: 2px 4px;">degraded</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- EXPLORATION 3: Guided Stepper Carousel -->
+      <!-- ========================================== -->
+      <div class="exploration-canvas" id="canvas-guidedStepper">
+        <div class="stepper-layout">
+          
+          <!-- Stepper control side panel -->
+          <div class="stepper-control-panel">
+            <div>
+              <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 16px; font-weight: 400; border-bottom: 1px solid var(--cds-border-subtle-01); padding-bottom: 12px;">Guided migration stepper</h3>
+              
+              <!-- Step list -->
+              <div class="step-item active" id="step-1">
+                <div class="step-indicator">
+                  <div class="step-number">1</div>
+                  <span class="step-title">Grid and card density</span>
+                </div>
+              </div>
+
+              <div class="step-item" id="step-2">
+                <div class="step-indicator">
+                  <div class="step-number">2</div>
+                  <span class="step-title">Primary header actions</span>
+                </div>
+              </div>
+
+              <div class="step-item" id="step-3">
+                <div class="step-indicator">
+                  <div class="step-number">3</div>
+                  <span class="step-title">Expressive status tags</span>
+                </div>
+              </div>
+
+              <!-- Dynamic step guidance info box -->
+              <div class="advice-ad-box" id="guidedGuidanceBox" style="margin-top: var(--cds-spacing-05);">
+                <h4 style="margin-top: 0; font-size: 13px; margin-bottom: 6px;" id="guidanceBoxHeader">Step 1: Grid and card density</h4>
+                <p style="font-size: 12px; line-height: 1.6; color: var(--cds-text-secondary); margin: 0;" id="guidanceBoxText">
+                  Notice how V12 cards utilize flat gray block tiles with tight margins, allowing designers to conserve vertical monitor space on dense telemetry pages.
+                </p>
+              </div>
+            </div>
+
+            <!-- Stepper Actions Row -->
+            <div class="carousel-actions-row">
+              <button class="btn-secondary" id="stepperPrevBtn" onclick="moveStep(-1)" disabled style="padding: 6px 12px; font-size: 12px;">Previous step</button>
+              <button class="mock-button" id="stepperNextBtn" onclick="moveStep(1)" style="padding: 6px 12px; font-size: 12px;">Next step</button>
+            </div>
+          </div>
+
+          <!-- Screen view focus canvas -->
+          <div class="stepper-view">
+            <!-- Overlay box that dynamically focuses on components -->
+            <div class="focus-overlay-box" id="stepperFocusBox"></div>
+
+            <!-- V12 Screen canvas -->
+            <div class="mock-canvas-container v12-screen" id="stepperMockContainer" style="padding: 24px; width: 620px;">
+              
+              <div class="mock-header" id="stepper-target-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs">infrastructure / overview</div>
+                    <h2 class="mock-title">Main database instance</h2>
+                  </div>
+                  <button class="mock-button">Provision node</button>
+                </div>
+              </div>
+
+              <div class="mock-row" id="stepper-target-cards">
+                <div class="mock-card">
+                  <div class="mock-card-label">CPU core health</div>
+                  <div class="mock-card-value" style="color: #da1e28;">Degraded</div>
+                </div>
+                <div class="mock-card">
+                  <div class="mock-card-label">RAM utilization</div>
+                  <div class="mock-card-value">78.4%</div>
+                </div>
+                <div class="mock-card">
+                  <div class="mock-card-label">Storage count</div>
+                  <div class="mock-card-value">1,402</div>
+                </div>
+              </div>
+
+              <div id="stepper-target-list">
+                <div style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: #525252;">Active database nodes</div>
+                <div class="mock-row-item">
+                  <span>db-primary-dal10</span>
+                  <span class="mock-status-badge">Healthy</span>
+                </div>
+                <div class="mock-row-item">
+                  <span>db-replica-lon02</span>
+                  <span class="mock-status-badge" style="background-color: #fff0f1; color: #da1e28; border: 1px solid #ffd7d9;">Degraded</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // GLOBAL LAYOUT SWITCHER
+    // ==========================================
+    function switchLayout(layoutId) {
+      // Toggle Switcher Active Tabs
+      document.querySelectorAll('.switcher-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.textContent.includes(layoutId === 'splitView' ? 'Split View' : layoutId === 'contextualHotspots' ? 'Hotspots' : 'Stepper')) {
+          tab.classList.add('active');
+        }
+      });
+
+      // Toggle Active Workspace Canvas
+      document.querySelectorAll('.exploration-canvas').forEach(canvas => {
+        canvas.classList.remove('active');
+      });
+      document.getElementById(`canvas-${layoutId}`).classList.add('active');
+
+      // Initialize Layout defaults
+      if (layoutId === 'guidedStepper') {
+        initGuidedStepper();
+      }
+    }
+
+    // ==========================================
+    // EXPLORATION 1: Linked Hover effects
+    // ==========================================
+    function linkHover(nodeId, isEnter) {
+      const v11Node = document.getElementById(`node-v11-${nodeId}`);
+      const v12Node = document.getElementById(`node-v12-${nodeId}`);
+      
+      if (isEnter) {
+        v11Node.classList.add('hover-active');
+        v12Node.classList.add('hover-active');
+      } else {
+        v11Node.classList.remove('hover-active');
+        v12Node.classList.remove('hover-active');
+      }
+    }
+
+    // ==========================================
+    // EXPLORATION 2: Contextual Hotspots
+    // ==========================================
+    function showDrawerContent(hotspotId) {
+      // Hide empty state and other contents
+      document.getElementById('drawer-empty').style.display = 'none';
+      document.querySelectorAll('.drawer-content').forEach(content => {
+        content.classList.remove('active');
+      });
+
+      // Show selected content
+      document.getElementById(`drawer-${hotspotId}`).classList.add('active');
+    }
+
+    // ==========================================
+    // EXPLORATION 3: Guided Stepper Carousel
+    // ==========================================
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    function initGuidedStepper() {
+      currentStep = 1;
+      updateStepUI();
+    }
+
+    function moveStep(direction) {
+      currentStep += direction;
+      if (currentStep < 1) currentStep = 1;
+      if (currentStep > totalSteps) currentStep = totalSteps;
+      updateStepUI();
+    }
+
+    function updateStepUI() {
+      // Toggle left sidebar class highlighting
+      document.querySelectorAll('.step-item').forEach((item, idx) => {
+        item.classList.remove('active', 'completed');
+        const itemIdx = idx + 1;
+        if (itemIdx === currentStep) {
+          item.classList.add('active');
+        } else if (itemIdx < currentStep) {
+          item.classList.add('completed');
+        }
+      });
+
+      // Toggle Stepper actions buttons states
+      document.getElementById('stepperPrevBtn').disabled = currentStep === 1;
+      if (currentStep === totalSteps) {
+        document.getElementById('stepperNextBtn').textContent = 'Finish Guided Walkthrough';
+        document.getElementById('stepperNextBtn').style.backgroundColor = '#24a148'; // green
+      } else {
+        document.getElementById('stepperNextBtn').textContent = 'Next step';
+        document.getElementById('stepperNextBtn').style.backgroundColor = ''; // restore blue
+      }
+
+      // Dynamic Focus Box calculations based on target ID
+      const focusBox = document.getElementById('stepperFocusBox');
+      let targetElementId = '';
+      let headerText = '';
+      let textGuidance = '';
+
+      if (currentStep === 1) {
+        targetElementId = 'stepper-target-cards';
+        headerText = 'Step 1: Grid and card density';
+        textGuidance = 'Notice how V12 cards utilize flat gray block tiles with tight margins, allowing designers to conserve vertical monitor space on dense telemetry pages.';
+      } else if (currentStep === 2) {
+        targetElementId = 'stepper-target-header';
+        headerText = 'Step 2: Primary header actions';
+        textGuidance = 'Carbon V12 reduces primary buttons dimensions and converts standard layout action links to Sentence Case for global coherence.';
+      } else if (currentStep === 3) {
+        targetElementId = 'stepper-target-list';
+        headerText = 'Step 3: Expressive status tags';
+        textGuidance = 'Pill-shaped, positive color alerts and uppercase tags are used to support rapid user error scanning under severe cognitive stress.';
+      }
+
+      // Update text in guidance box
+      document.getElementById('guidanceBoxHeader').textContent = headerText;
+      document.getElementById('guidanceBoxText').textContent = textGuidance;
+
+      // Position focus highlight overlay
+      const targetElement = document.getElementById(targetElementId);
+      const viewport = document.querySelector('.stepper-view');
+      
+      const targetRect = targetElement.getBoundingClientRect();
+      const viewportRect = viewport.getBoundingClientRect();
+
+      // Set boundary dimensions around targeted components with a comfort offset padding (8px)
+      const offset = 10;
+      focusBox.style.top = `${targetRect.top - viewportRect.top - offset}px`;
+      focusBox.style.left = `${targetRect.left - viewportRect.left - offset}px`;
+      focusBox.style.width = `${targetRect.width + (offset * 2)}px`;
+      focusBox.style.height = `${targetRect.height + (offset * 2)}px`;
+    }
+
+    // Recalculate focus boundaries on window resize
+    window.addEventListener('resize', () => {
+      const activeCanvas = document.querySelector('.exploration-canvas.active');
+      if (activeCanvas && activeCanvas.id === 'canvas-guidedStepper') {
+        updateStepUI();
+      }
+    });
+  </script>
+</body>
+</html>

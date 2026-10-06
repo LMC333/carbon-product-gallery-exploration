@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" data-carbon-theme="g10">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carbon Product Gallery Redefined — Strategic Proposal</title>
+  
+  <!-- Load Carbon Styles via CDN (unpkg) -->
+  <link rel="stylesheet" href="https://unpkg.com/@carbon/styles/css/styles.css">
+  
+  <style>
+    /* Premium overrides and fallback tokens built on Carbon's design language */
+    :root {
+      --cds-interactive-01: #0f62fe; /* Carbon Blue */
+      --cds-interactive-02: #8a3ffc; /* Carbon Purple */
+      --cds-support-success: #24a148; /* Carbon Green */
+      --cds-text-primary: #161616;
+      --cds-text-secondary: #525252;
+      --cds-text-helper: #6f6f6f;
+      --cds-background: #ffffff;
+      --cds-field-01: #f4f4f4;
+      --cds-border-subtle-01: #e0e0e0;
+      --cds-spacing-04: 0.75rem;   /* Spacing: 12px */
+      --cds-spacing-05: 1.5rem;    /* Spacing: 24px */
+      --cds-spacing-06: 2.25rem;   /* Spacing: 36px */
+      --cds-spacing-07: 3rem;      /* Spacing: 48px */
+      --cds-spacing-08: 4.5rem;    /* Spacing: 72px */
+    }
+
+    body {\1padding: 0 0 var(--cds-spacing-07) 0;\2margin: 0;}
+
+    /* Outer layout limits */
+    .app-container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 var(--cds-spacing-05);
+    }
+
+    /* Typography Overrides for Airy Feeling */
+    .cds--type-body-long-01 {
+      line-height: 1.75;
+      margin-bottom: var(--cds-spacing-05);
+    }
+
+    li {
+      line-height: 1.7;
+      margin-bottom: var(--cds-spacing-04);
+    }
+
+    /* Carbon-inspired header modifications */
+    header {
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding-bottom: var(--cds-spacing-06);
+      margin-bottom: var(--cds-spacing-06);
+    }
+
+    .tagline-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--cds-interactive-01);
+      margin-bottom: var(--cds-spacing-04);
+      display: inline-block;
+    }
+
+    .proposal-title {
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      font-weight: 300;
+      margin: 0 0 var(--cds-spacing-04) 0;
+    }
+
+    .proposal-subtitle {
+      color: var(--cds-text-secondary);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* Executive Highlights */
+    .executive-summary-box {
+      border-left: 4px solid var(--cds-interactive-01);
+      background-color: var(--cds-field-01);
+      padding: var(--cds-spacing-05) var(--cds-spacing-05);
+      margin-bottom: var(--cds-spacing-06);
+      line-height: 1.75;
+    }
+
+    /* Statistic blocks */
+    .metrics-dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--cds-spacing-05);
+      margin: var(--cds-spacing-06) 0;
+    }
+
+    .metric-item {
+      background-color: var(--cds-field-01);
+      border: 1px solid var(--cds-border-subtle-01);
+      padding: var(--cds-spacing-05);
+      text-align: center;
+    }
+
+    .metric-large-number {
+      font-size: 40px;
+      font-weight: 300;
+      color: var(--cds-interactive-01);
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+
+    .metric-large-number.purple-accent {
+      color: var(--cds-interactive-02);
+    }
+
+    .metric-large-number.green-accent {
+      color: var(--cds-support-success);
+    }
+
+    .metric-sublabel {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--cds-text-helper);
+      font-weight: 600;
+    }
+
+    /* Section Subheadings */
+    .carbon-section-heading {
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding-bottom: var(--cds-spacing-04);
+      margin-top: var(--cds-spacing-08);
+      margin-bottom: var(--cds-spacing-05);
+    }
+
+    /* Custom Cards matching Carbon Tiles */
+    .carbon-tile-card {
+      border: 1px solid var(--cds-border-subtle-01);
+      background-color: var(--cds-background);
+      padding: var(--cds-spacing-05) var(--cds-spacing-05);
+      margin-bottom: var(--cds-spacing-05);
+      transition: background-color 0.15s ease;
+    }
+
+    .carbon-tile-card:hover {
+      background-color: var(--cds-field-01);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: var(--cds-spacing-04);
+      color: var(--cds-text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    /* Code & Script displays */
+    pre.code-editor-block {
+      background-color: var(--cds-field-01);
+      border: 1px solid var(--cds-border-subtle-01);
+      padding: var(--cds-spacing-05);
+      overflow-x: auto;
+      margin: var(--cds-spacing-05) 0 var(--cds-spacing-05) 0;
+    }
+
+    pre.code-editor-block code {
+      font-family: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--cds-text-primary);
+    }
+
+    /* Citations / Quotes */
+    .carbon-pullquote {
+      background-color: var(--cds-field-01);
+      border-left: 4px solid var(--cds-interactive-02);
+      padding: var(--cds-spacing-05) var(--cds-spacing-05);
+      margin: var(--cds-spacing-05) 0 var(--cds-spacing-05) 0;
+      font-style: italic;
+      line-height: 1.7;
+    }
+
+    .pullquote-citation {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      font-style: normal;
+      color: var(--cds-text-helper);
+      margin-top: var(--cds-spacing-04);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* Carbon Badges */
+    .carbon-tag-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px var(--cds-spacing-04);
+      border-radius: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: var(--cds-spacing-04);
+    }
+
+    .tag-blue {
+      background-color: #edf5ff;
+      color: #0043ce;
+      border: 1px solid #d0e2ff;
+    }
+
+    .tag-purple {
+      background-color: #f7f1ff;
+      color: #6929c4;
+      border: 1px solid #e8daff;
+    }
+
+    .tag-green {
+      background-color: #defbe6;
+      color: #0f6224;
+      border: 1px solid #a7f0ba;
+    }
+
+    /* Data Grid details */
+    .carbon-matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--cds-spacing-05) 0 var(--cds-spacing-06) 0;
+    }
+
+    .carbon-matrix-table th {
+      background-color: var(--cds-field-01);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--cds-text-secondary);
+      border-bottom: 2px solid var(--cds-border-subtle-01);
+      padding: 14px var(--cds-spacing-05);
+    }
+
+    .carbon-matrix-table td {
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding: 18px var(--cds-spacing-05);
+      vertical-align: top;
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+
+    /* Global footer */
+    .app-brand-footer {
+      border-top: 1px solid var(--cds-border-subtle-01);
+      padding-top: var(--cds-spacing-06);
+      margin-top: var(--cds-spacing-08);
+      text-align: center;
+      font-size: 11px;
+      color: var(--cds-text-helper);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+  
+    /* Unified Global Navigation Header Styles matching Carbon standards */
+    .cds-global-header {
+      background-color: #161616;
+      height: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      border-bottom: 1px solid #393939;
+      flex-shrink: 0;
+      z-index: 110;
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    }
+    .header-nav-link {
+      color: #c6c6c6;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 400;
+      padding: 0 16px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s ease;
+      border-bottom: 3px solid transparent;
+      box-sizing: border-box;
+    }
+    .header-nav-link:hover {
+      background-color: #262626;
+      color: #ffffff;
+    }
+    .header-nav-link.active {
+      color: #ffffff;
+      font-weight: 600;
+      border-bottom-color: #0f62fe;
+      background-color: #262626;
+    }
+
+  </style>
+</head>
+<body>
+    <!-- Global Carbon UI Shell Header -->
+    <header class="cds-global-header">
+      <div style="display: flex; align-items: center; gap: 24px; height: 100%;">
+        <a href="Carbon_Product_Gallery_Strategic_Proposal.html" style="text-decoration: none; color: #ffffff; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; display: flex; align-items: center; height: 100%;">
+          IBM Carbon <span style="font-weight: 300; color: #a8a8a8; margin-left: 4px;">Product Gallery</span>
+        </a>
+        <nav style="display: flex; height: 100%; align-items: center; margin-left: 16px;">
+          <a class="header-nav-link active" href="Carbon_Product_Gallery_Strategic_Proposal.html">Proposal & Research</a>
+          <a class="header-nav-link" href="Product_Gallery_Discovery_Homepage.html">Gallery Hub</a>
+          <a class="header-nav-link" href="Visual_Gallery_Layout_Explorations.html">Gallery Layout Options</a>
+          <a class="header-nav-link" href="V12_Migration_Layout_Explorations.html">V12 Migration Explorer</a>
+        </nav>
+      </div>
+      <div style="font-size: 11px; color: #a8a8a8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">"Carbon in Action" MVP</div>
+    </header>
+
+  <div class="app-container">
+    <header>
+      <div class="tagline-label">IBM Carbon Design System</div>
+      <h1 class="proposal-title cds--type-expressive-heading-05">Carbon Product Gallery redefined</h1>
+      <p class="proposal-subtitle cds--type-body-long-01">A quantitative and qualitative research roadmap to transform the legacy visual directory into <strong>"Carbon in Action"</strong> — a living hub bridging design blueprints and production UI.</p>
+    </header>
+
+    <div class="executive-summary-box">
+      <p class="cds--type-body-long-01"><strong>Executive Summary:</strong> The legacy Airtable Product Gallery acted as a simple repository of static UI captures. A targeted research study surveying 28 IBM product designers and developers (alongside 3 core Carbon Design System team members) identified a clear requirement: <strong>the Product Gallery must evolve from a passive archive of images into an interactive, learning-focused visual ecosystem.</strong> This proposal translates core user insights into a strategic plan for a rebuilt gallery called <strong>"Carbon in Action"</strong>, designed to accelerate <strong>Carbon V12 migration</strong> and support community-driven contributions.</p>
+    </div>
+
+    <h2 class="carbon-section-heading cds--type-expressive-heading-03">Stage 1: Core research insights and guidance</h2>
+    <p class="cds--type-body-long-01">An analysis of user feedback from IBM product teams highlights key operational and design directions that must guide the evolution of the Product Gallery:</p>
+
+    <div class="metrics-dashboard">
+      <div class="metric-item">
+        <div class="metric-large-number">40%+</div>
+        <div class="metric-sublabel">Awareness / discovery deficit</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-large-number purple-accent">92%</div>
+        <div class="metric-sublabel">Demand for V12 guidance</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-large-number green-accent">0%</div>
+        <div class="metric-sublabel">Prior contributions</div>
+      </div>
+    </div>
+
+    <div class="carbon-tile-card">
+      <h3 class="card-title">Guidance Area A: Proactive discovery and marketing</h3>
+      <p class="cds--type-body-long-01">Over 40% of surveyed product team members were entirely unaware of the gallery's existence or had never been prompted to use it. This feedback guides us to integrate the new gallery natively into Carbon's primary documentation navigation and promote it actively across active internal Slack workspaces.</p>
+      <div class="carbon-pullquote">
+        "Be louder on Slack that IBM Carbon has their very own Mobbin clone! I've been a UX Designer here 10 years and this is the first I'm hearing of this site."
+        <span class="pullquote-citation">— Senior UX Designer, Research Participant</span>
+      </div>
+    </div>
+
+    <div class="carbon-tile-card">
+      <h3 class="card-title">Guidance Area B: Provide rich context and page-type categorization</h3>
+      <p class="cds--type-body-long-01">Users are frustrated by flat screenshots that lack context. They want screenshots grouped by page archetypes (e.g., landing pages, monitoring dashboards, detail views, AI chat interfaces) rather than random uploads. They also request toggleable visual annotations and short product videos to understand layout behavior.</p>
+      <div class="carbon-pullquote">
+        "I'd add the ability to show the different screens grouped by the type of pages — example: All dashboards, all reports, all AI conversational interfaces, etc."
+        <span class="pullquote-citation">— UX Researcher, Research Participant</span>
+      </div>
+      <div class="carbon-pullquote">
+        "When/why would I go there? It's a collection of seemingly random screenshots of different products, some of which are quite outdated. Examples lack context and design rationale... Some screenshots are difficult to view or navigate to."
+        <span class="pullquote-citation">— Cross-Team Consensus (Common qualitative themes from over 60% of participants)</span>
+      </div>
+    </div>
+
+    <div class="carbon-tile-card">
+      <h3 class="card-title">Guidance Area C: Connect users to the original builders</h3>
+      <p class="cds--type-body-long-01">Product teams want to use the gallery as a peer-to-peer networking tool. If a team finds an inspiring screen, they want to contact the creators directly via Slack to ask specific questions about design choices, implementation hurdles, and customization parameters.</p>
+      <div class="carbon-pullquote">
+        "Reconnecting to respective project owners as (if they currently have worked on that specific product). Guidance support and also if a designer is working on it as a beginner in respective career, they can approach them regarding that specific query or as to what product-specific challenges did they go through."
+        <span class="pullquote-citation">— Product Designer, Research Participant</span>
+      </div>
+    </div>
+
+    <div class="carbon-tile-card">
+      <h3 class="card-title">Guidance Area D: Lower contribution barriers with automation</h3>
+      <p class="cds--type-body-long-01">The primary barrier to contribution is the high manual effort required to tag components, name products, and add metadata. Product teams recommend eliminating complex manual forms by leveraging Figma plugin integrations and providing clear public recognition/rewards for contributors.</p>
+      <div class="carbon-pullquote">
+        "I would have to be convinced of the value it brings before investing time to contribute. I am not convinced yet. Therefore I have no plans to contribute."
+        <span class="pullquote-citation">— Senior UI Developer, Research Participant</span>
+      </div>
+    </div>
+
+    <h2 class="carbon-section-heading cds--type-expressive-heading-03">Stage 2: Competitor and design ecosystem analysis on Mural</h2>
+    <p class="cds--type-body-long-01">To justify development investment and align stakeholders, we conducted an ecosystem analysis on Mural comparing the legacy Carbon gallery with state-of-the-art design hubs (Figma Community, Material Design, Shopify Polaris, and Atlassian):</p>
+
+    <table class="carbon-matrix-table">
+      <thead>
+        <tr>
+          <th>Ecosystem dimension</th>
+          <th>Competitor benchmark pattern</th>
+          <th>Carbon gap &amp; strategic opportunity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Discovery &amp; Inspiration</strong></td>
+          <td>Dribbble-style visual arrays and Pinterest masonry feeds (Figma Community, Mobbin).</td>
+          <td>Move away from rigid Airtable spreadsheets. Introduce dynamic, image-heavy grid cards with instant component hover highlights.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Layout Navigation</strong></td>
+          <td>Deep contextual metadata tagging by product area and layout archetype (Shopify Polaris).</td>
+          <td>Implement multi-tier category structures (SaaS Console, On-Premise Operators) and dynamic left search drawers.</td>
+        </tr>
+        <tr>
+          <td><strong>3. Guidance &amp; Learning</strong></td>
+          <td>Side-by-side spec panels and density calibration sliders (Material Design, Apple Developer).</td>
+          <td>Build an interactive V12 migration playground with overlays (spacing grid, redlines, casing audits).</td>
+        </tr>
+        <tr>
+          <td><strong>4. Peer Connectivity</strong></td>
+          <td>Creator profile attribution and direct feedback channels (Figma Community).</td>
+          <td>Insert direct Slack links to connect builders, speeding up implementation and design alignment.</td>
+        </tr>
+        <tr>
+          <td><strong>5. Contribution Engine</strong></td>
+          <td>Zero-barrier file publishing and template duplication (Figma Community).</td>
+          <td>Replace complex manual forms with an automated Figma plugin that parses component usage instantly.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="carbon-section-heading cds--type-expressive-heading-03">Stage 3: The "Carbon in Action" hub proposal</h2>
+    <p class="cds--type-body-long-01">We explicitly challenge the assumption that we should simply recreate a static screenshot library. Instead, we propose <strong>"Carbon in Action"</strong>, a modernized, social, and visual hub integrated natively into the Carbon ecosystem.</p>
+
+    <h3 class="cds--type-expressive-heading-01">1. Developer-ready data schema specification</h3>
+    <p class="cds--type-body-long-01">Every gallery entry is backed by a structured, semantic database schema to enable advanced search indexing and bidirectional linking:</p>
+    <pre class="code-editor-block"><code>{
+  "submission_id": "sub_V12_dashboard_01",
+  "product_name": "watsonx.ai",
+  "screen_type": "Dashboard",
+  "carbon_version": "V12",
+  "tech_stack": {
+    "framework": "React",
+    "version": "1.45.0"
+  },
+  "design_rationale": "Optimized to provide data scientists with dense metrics views, custom-tuning Carbon spacing tokens.",
+  "contributor": {
+    "name": "Jane Doe",
+    "slack_user": "janedoe",
+    "slack_channel": "#watsonx-ai-design"
+  },
+  "components_used": [
+    { "component_id": "data-table", "customized": true, "notes": "Merged table header with search component" },
+    { "component_id": "inline-tag", "customized": false }
+  ]
+}</code></pre>
+
+    <h3 class="cds--type-expressive-heading-01">2. Core functional requirements</h3>
+    
+    <div class="carbon-tile-card">
+      <h4>A. Bidirectional component cross-linking</h4>
+      <p class="cds--type-body-long-01"><span class="carbon-tag-badge tag-blue">MVP</span> Production screenshots will connect directly to official Carbon component documentation. <strong>MVP Implementation:</strong> To accelerate time-to-market, components will be cataloged and filtered inside a clean sidebar panel. <strong>Target Release:</strong> An interactive overlay engine will render hotspot annotations directly over screenshots. Clicking a hotspot navigates to the component guide; conversely, documentation pages will pull live screenshots showing components in real-world context.</p>
+    </div>
+
+    <div class="carbon-tile-card">
+      <h4>B. The V12 migration slider (Strategic accelerator)</h4>
+      <p class="cds--type-body-long-01"><span class="carbon-tag-badge tag-blue">MVP</span> An interactive, sliding split-screen showing a legacy (V11) interface alongside its migrated (V12) equivalent. This provides visual reassurance to product leads that V12 upgrades maintain density and professional polish, and serves as a powerful way to demonstrate how complex user interfaces can be simplified, decluttered, and visually streamlined as part of the v12 transition.</p>
+    </div>
+
+    <div class="carbon-tile-card">
+      <h4>C. Zero-friction contribution engine (AI-Powered Auto-Tagging)</h4>
+      <p class="cds--type-body-long-01"><span class="carbon-tag-badge tag-blue">MVP</span> To eliminate manual cataloging effort without the overhead of a dedicated Figma plugin, contributors simply upload their screenshots. A lightweight AI vision model (via watsonx.ai) automatically analyzes the image, identifies standard Carbon components (e.g., Tabs, Data Table, Dropdown), drafts descriptive alt-text, and pre-populates metadata. The contributor reviews the generated tags and clicks publish, shrinking submission time to under 10 seconds.</p>
+    </div>
+
+    <div class="carbon-tile-card">
+      <h4>D. Peer-to-peer Slack connectivity</h4>
+      <p class="cds--type-body-long-01"><span class="carbon-tag-badge tag-blue">MVP</span> Every screenshot detail page embeds a contributor card displaying the team's Slack contact details and a direct button: <code>[ Chat with Jane Doe on Slack ]</code>. This instantly breaks down organizational silos across IBM.</p>
+    </div>
+
+    <h3 class="cds--type-expressive-heading-01">3. Strategic shifts: Challenging the status quo</h3>
+    <ul>
+      <li class="cds--type-body-long-01"><strong>Embrace real-world pragmatism:</strong> Instead of only allowing flawless, completely compliant screens, we should showcase highly functional custom extensions. If a team had to customize a component to support an edge-case, we want that documented. It serves as invaluable research for Carbon users and for the promotion of Carbon labs.</li>
+      <li class="cds--type-body-long-01"><strong>Developer-centric insights:</strong> Developers make up a huge portion of Carbon's audience. We should highlight the frontend framework (React, Web Components, Svelte) and link directly to internal GitHub repository declaration files to allow instant code inspection.</li>
+      <li class="cds--type-body-long-01"><strong>Distributed moderation:</strong> To prevent the core Carbon team from becoming a curation bottleneck, we propose appointing "Carbon Ambassadors" across major product groups with direct self-publishing and approval rights.</li>
+    </ul>
+
+    <div class="app-brand-footer">
+      Made with IBM Bob
+    </div>
+  </div>
+</body>
+</html>

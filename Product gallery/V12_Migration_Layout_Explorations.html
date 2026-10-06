@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en" data-carbon-theme="g10">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V12 Migration Layout Explorations — Carbon Design System</title>
+  
+  <!-- Load official Carbon Stylesheet for a high-fidelity IBM look and feel -->
+  <link rel="stylesheet" href="https://unpkg.com/@carbon/styles/css/styles.css">
+  
+  <style>
+    /* Styling variables and overrides matching Carbon design standards */
+    :root {
+      --cds-interactive-01: #0f62fe; /* Carbon Blue */
+      --cds-interactive-02: #8a3ffc; /* Carbon Purple */
+      --cds-support-success: #24a148; /* Carbon Green */
+      --cds-text-primary: #161616;
+      --cds-text-secondary: #525252;
+      --cds-text-helper: #6f6f6f;
+      --cds-background: #ffffff;
+      --cds-field-01: #f4f4f4;
+      --cds-border-subtle-01: #e0e0e0;
+      --cds-spacing-04: 0.75rem;   /* 12px spacing */
+      --cds-spacing-05: 1.5rem;    /* 24px spacing */
+      --cds-spacing-06: 2.25rem;   /* 36px spacing */
+      --cds-spacing-07: 3rem;      /* 48px spacing */
+      --cds-spacing-08: 4.5rem;    /* 72px spacing */
+    }
+
+    body {
+      background-color: #f4f4f4;
+      color: var(--cds-text-primary);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    /* Core Application Frame */
+    .app-frame {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top Navigation bar containing layout switcher tabs */
+    .nav-bar {
+      background-color: #161616;
+      color: #ffffff;
+      padding: 0 var(--cds-spacing-05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 48px;
+      border-bottom: 1px solid #393939;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+    }
+
+    .brand-title span {
+      font-weight: 300;
+      color: #a8a8a8;
+    }
+
+    /* Tabs switcher */
+    .layout-switcher {
+      display: flex;
+      height: 100%;
+      align-items: flex-end;
+    }
+
+    .switcher-tab {
+      background: transparent;
+      border: none;
+      color: #a8a8a8;
+      padding: 0 var(--cds-spacing-05);
+      font-size: 13px;
+      font-weight: 400;
+      height: 48px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      border-bottom: 3px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .switcher-tab:hover {
+      background-color: #262626;
+      color: #ffffff;
+    }
+
+    .switcher-tab.active {
+      color: #ffffff;
+      border-bottom-color: var(--cds-interactive-01);
+      font-weight: 600;
+      background-color: #262626;
+    }
+
+    /* Inspired by carbon-v12-compare: Auditing Overlays Bar */
+    .auditing-overlays-bar {
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding: 0 var(--cds-spacing-05);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 48px;
+      flex-shrink: 0;
+      z-index: 90;
+    }
+
+    .overlays-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--cds-text-helper);
+      margin-right: 8px;
+    }
+
+    .overlay-btn {
+      background-color: #f4f4f4;
+      border: 1px solid var(--cds-border-subtle-01);
+      color: var(--cds-text-primary);
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 400;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .overlay-btn:hover {
+      background-color: #e0e0e0;
+    }
+
+    .overlay-btn.active {
+      background-color: #edf5ff;
+      border-color: var(--cds-interactive-01);
+      color: #0043ce;
+      font-weight: 600;
+    }
+
+    .overlay-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #c6c6c6;
+    }
+
+    .overlay-btn.active .overlay-dot {
+      background-color: var(--cds-interactive-01);
+    }
+
+    .overlay-btn.active .overlay-dot.purple {
+      background-color: var(--cds-interactive-02);
+    }
+
+    .overlay-btn.active .overlay-dot.green {
+      background-color: var(--cds-support-success);
+    }
+
+    /* Main Workspace Wrapper (Horizontal split for side navigation) */
+    .workspace-wrapper {
+      display: flex;
+      flex-grow: 1;
+      height: calc(100vh - 144px); /* 100vh minus header and overlays bar */
+      overflow: hidden;
+    }
+
+    /* Left-most side panel: Screen and use cases directory explorer */
+    .library-sidebar {
+      width: 280px;
+      background-color: #ffffff;
+      border-right: 1px solid var(--cds-border-subtle-01);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .library-sidebar-header {
+      padding: var(--cds-spacing-05);
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--cds-text-helper);
+      margin: 0;
+    }
+
+    /* Directory items list */
+    .example-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .example-item {
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      transition: background-color 0.15s ease;
+    }
+
+    .example-btn {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: var(--cds-spacing-05);
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .example-btn:hover {
+      background-color: var(--cds-field-01);
+    }
+
+    .example-item.active .example-btn {
+      background-color: #edf5ff;
+      border-left: 4px solid var(--cds-interactive-01);
+    }
+
+    .example-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--cds-text-primary);
+      margin-bottom: 4px;
+    }
+
+    .example-meta {
+      font-size: 11.5px;
+      color: var(--cds-text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Main Workspace area */
+    .workspace-area {
+      flex-grow: 1;
+      overflow: hidden;
+      position: relative;
+      background-color: #f4f4f4;
+    }
+
+    /* Base Layout Container (Hidden by default unless active) */
+    .exploration-canvas {
+      display: none;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .exploration-canvas.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* ========================================== */
+    /* AUDITING OVERLAY ELEMENTS */
+    /* ========================================== */
+    .grid-overlay-container {
+      position: relative;
+    }
+
+    .grid-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+      display: none;
+      background-image: repeating-linear-gradient(90deg, rgba(15, 98, 254, 0.05) 0px, rgba(15, 98, 254, 0.05) 8px, transparent 8px, transparent 16px);
+    }
+
+    /* Redline indicator styles */
+    .redline-indicator {
+      position: absolute;
+      border: 1px solid #da1e28;
+      background-color: rgba(255, 255, 255, 0.95);
+      color: #da1e28;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 4px;
+      pointer-events: none;
+      z-index: 15;
+      display: none;
+      box-shadow: 0 1px 3px rgba(218, 30, 40, 0.15);
+    }
+
+    /* Dotted Grammar Case Highlight circles */
+    .case-highlight {
+      position: relative;
+    }
+
+    .case-highlight-border {
+      position: absolute;
+      top: -4px;
+      left: -6px;
+      right: -6px;
+      bottom: -4px;
+      border: 2px dotted transparent;
+      pointer-events: none;
+      z-index: 12;
+      transition: border-color 0.15s ease;
+    }
+
+    .case-badge-label {
+      position: absolute;
+      top: -16px;
+      left: -6px;
+      background-color: var(--cds-support-success);
+      color: #ffffff;
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 1px 4px;
+      pointer-events: none;
+      z-index: 16;
+      display: none;
+    }
+
+    /* Toggle visibility states via global flags */
+    .grid-overlay-active .grid-layer {
+      display: block;
+    }
+
+    .redlines-active .redline-indicator {
+      display: block;
+    }
+
+    .case-active .case-highlight-border {
+      border-color: var(--cds-support-success);
+    }
+
+    .case-active .case-badge-label {
+      display: block;
+    }
+
+    /* ========================================== */
+    /* EXPLORATION 1: Before/After Slider Comparison */
+    /* ========================================== */
+    .slider-tab-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .slider-sidebar {
+      background-color: #ffffff;
+      border-right: 1px solid var(--cds-border-subtle-01);
+      padding: var(--cds-spacing-05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+    }
+
+    .slider-view-viewport {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: var(--cds-spacing-05);
+      height: 100%;
+      overflow: auto;
+    }
+
+    /* The Slider Core Container */
+    .slider-wrapper {
+      position: relative;
+      width: 680px;
+      height: 480px;
+      overflow: hidden;
+      border: 1px solid #c6c6c6;
+      user-select: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+
+    /* Layers */
+    .view-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Layer Left (V11 Side) */
+    .layer-v11 {
+      background-color: #f4f4f4;
+      color: #161616;
+      z-index: 1;
+    }
+
+    /* Layer Right (V12 Side) */
+    .layer-v12 {
+      background-color: #ffffff;
+      color: #161616;
+      z-index: 2;
+      clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+    }
+
+    /* Label Indicators on layers */
+    .version-indicator {
+      position: absolute;
+      top: 16px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      z-index: 10;
+      pointer-events: none;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .indicator-v11 {
+      left: 16px;
+      background-color: #393939;
+      color: #ffffff;
+    }
+
+    .indicator-v12 {
+      right: 16px;
+      background-color: #0f62fe;
+      color: #ffffff;
+    }
+
+    /* Drag Divider */
+    .slider-divider {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 4px;
+      height: 100%;
+      background-color: #0f62fe;
+      z-index: 5;
+      cursor: ew-resize;
+      transform: translateX(-50%);
+    }
+
+    .slider-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      background-color: #0f62fe;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      z-index: 6;
+      transform: translate(-50%, -50%);
+      cursor: ew-resize;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+    }
+
+    .slider-handle::before, .slider-handle::after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-style: solid;
+      position: absolute;
+    }
+
+    .slider-handle::before {
+      border-width: 5px 6px 5px 0;
+      border-color: transparent #ffffff transparent transparent;
+      left: 8px;
+    }
+
+    .slider-handle::after {
+      border-width: 5px 0 5px 6px;
+      border-color: transparent transparent transparent #ffffff;
+      right: 8px;
+    }
+
+    /* ========================================== */
+    /* EXPLORATION 2: Two Static Images Side-by-Side */
+    /* ========================================== */
+    .side-by-side-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: var(--cds-spacing-05);
+      gap: var(--cds-spacing-05);
+    }
+
+    .canvas-panel-card {
+      background-color: #ffffff;
+      border: 1px solid var(--cds-border-subtle-01);
+      padding: var(--cds-spacing-05);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .canvas-panel-card-header {
+      border-bottom: 1px solid var(--cds-border-subtle-01);
+      padding-bottom: var(--cds-spacing-04);
+      margin-bottom: var(--cds-spacing-05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Callout annotation tags */
+    .annotation-bubble {
+      background-color: #edf5ff;
+      border-left: 3px solid var(--cds-interactive-01);
+      padding: 12px 16px;
+      margin-top: 16px;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    .annotation-bubble.purple {
+      background-color: #f7f1ff;
+      border-left-color: var(--cds-interactive-02);
+    }
+
+    /* ========================================== */
+    /* EXPLORATION 3: Two Stacked Images (Above/Below) */
+    /* ========================================== */
+    .stacked-layout {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: var(--cds-spacing-05) var(--cds-spacing-05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stacked-container {
+      width: 680px;
+    }
+
+    .stacked-header-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #e0e0e0;
+      padding: 10px 16px;
+      border: 1px solid #c6c6c6;
+      border-bottom: none;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stacked-header-banner.v12 {
+      background-color: var(--cds-interactive-01);
+      color: #ffffff;
+      border-color: var(--cds-interactive-01);
+    }
+
+    /* ========================================== */
+    /* EXPLORATION 4: Split-Canvas Synchronized View */
+    /* ========================================== */
+    .split-canvas-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr 1fr;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .split-canvas-sidebar {
+      background-color: #ffffff;
+      border-right: 1px solid var(--cds-border-subtle-01);
+      padding: var(--cds-spacing-05);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .split-canvas-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: scroll; /* Scroll synchronized via JavaScript */
+      background-color: #ffffff;
+      border-right: 1px solid var(--cds-border-subtle-01);
+      padding: var(--cds-spacing-05);
+    }
+
+    /* Highlighting counterparts on hover */
+    .synchronized-node {
+      border: 2px dashed transparent;
+      padding: 16px;
+      margin-bottom: var(--cds-spacing-05);
+      transition: all 0.15s ease;
+      cursor: help;
+    }
+
+    .synchronized-node:hover, .synchronized-node.sync-hover {
+      border-color: var(--cds-interactive-01);
+      background-color: #edf5ff;
+    }
+
+    .synchronized-node:hover .sync-label, .synchronized-node.sync-hover .sync-label {
+      background-color: var(--cds-interactive-01);
+      color: #ffffff;
+    }
+
+    .sync-label {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      background-color: #e0e0e0;
+      color: #161616;
+      padding: 2px 6px;
+      margin-bottom: var(--cds-spacing-04);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* MOCK CONTENT DETAILS */
+    .mock-screen {
+      padding: 24px;
+      width: 100%;
+      background-color: inherit;
+      position: relative;
+    }
+
+    .mock-header {
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .mock-title {
+      font-size: 18px;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .mock-breadcrumbs {
+      font-size: 11px;
+      color: #525252;
+      margin-bottom: 2px;
+    }
+
+    .mock-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .mock-card {
+      border: 1px solid #e0e0e0;
+      background-color: #ffffff;
+      padding: 12px;
+      position: relative;
+    }
+
+    .mock-card-label {
+      font-size: 11px;
+      color: #525252;
+      margin-bottom: 4px;
+    }
+
+    .mock-card-value {
+      font-size: 20px;
+      font-weight: 300;
+    }
+
+    .mock-button {
+      background-color: var(--cds-interactive-01);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mock-status-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+
+    /* V11 Speciics inside components */
+    .v11-screen {
+      background-color: #f4f4f4;
+    }
+
+    .v11-screen .mock-card {
+      border-radius: 0;
+    }
+
+    .v11-screen .mock-button {
+      padding: 12px 20px;
+      font-size: 13.5px;
+    }
+
+    .v11-screen .mock-status-badge {
+      background-color: #e0e0e0;
+      color: #161616;
+      border-radius: 0;
+      text-transform: lowercase;
+      font-weight: 500;
+    }
+
+    /* V12 Specs inside components */
+    .v12-screen {
+      background-color: #ffffff;
+    }
+
+    .v12-screen .mock-card {
+      background-color: #f4f4f4;
+      border-color: #e0e0e0;
+    }
+
+    .v12-screen .mock-button {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+
+    .v12-screen .mock-status-badge {
+      background-color: #defbe6;
+      color: #0f6224;
+      border: 1px solid #a7f0ba;
+      border-radius: 12px;
+    }
+
+    .mock-row-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 12px;
+      position: relative;
+    }
+
+    .v12-screen .mock-row-item {
+      padding: 6px 12px;
+    }
+
+    .advice-ad-box {
+      border: 1px solid var(--cds-border-subtle-01);
+      border-top: 3px solid var(--cds-interactive-01);
+      padding: var(--cds-spacing-05);
+      background-color: #ffffff;
+      margin-bottom: var(--cds-spacing-05);
+    }
+
+    .badge-primary {
+      background-color: #e8f2fc;
+      color: var(--cds-interactive-01);
+      border: 1px solid #bcd7f5;
+    }
+
+    .badge-secondary {
+      background-color: #f3effc;
+      color: var(--cds-interactive-02);
+      border: 1px solid #dfd5f6;
+    }
+
+    /* Dynamic UI Mock details */
+    .mock-chat-bubble {
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      max-width: 80%;
+      position: relative;
+    }
+    
+    .v11-screen .mock-chat-bubble {
+      background-color: #e0e0e0;
+      border-radius: 0px;
+    }
+
+    .v12-screen .mock-chat-bubble {
+      background-color: #f4f4f4;
+      border-radius: 16px;
+    }
+
+    .mock-input {
+      width: 100%;
+      background-color: #ffffff;
+      border: 1px solid #c6c6c6;
+      padding: 12px;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    .v12-screen .mock-input {
+      border-radius: 4px;
+      border-color: #e0e0e0;
+      background-color: #f4f4f4;
+      padding: 8px 12px;
+    }
+  
+    /* Unified Global Navigation Header Styles matching Carbon standards */
+    .cds-global-header {
+      background-color: #161616;
+      height: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      border-bottom: 1px solid #393939;
+      flex-shrink: 0;
+      z-index: 110;
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    }
+    .header-nav-link {
+      color: #c6c6c6;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 400;
+      padding: 0 16px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s ease;
+      border-bottom: 3px solid transparent;
+      box-sizing: border-box;
+    }
+    .header-nav-link:hover {
+      background-color: #262626;
+      color: #ffffff;
+    }
+    .header-nav-link.active {
+      color: #ffffff;
+      font-weight: 600;
+      border-bottom-color: #0f62fe;
+      background-color: #262626;
+    }
+
+  </style>
+</head>
+<body>
+    <!-- Global Carbon UI Shell Header -->
+    <header class="cds-global-header">
+      <div style="display: flex; align-items: center; gap: 24px; height: 100%;">
+        <a href="Carbon_Product_Gallery_Strategic_Proposal.html" style="text-decoration: none; color: #ffffff; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; display: flex; align-items: center; height: 100%;">
+          IBM Carbon <span style="font-weight: 300; color: #a8a8a8; margin-left: 4px;">Product Gallery</span>
+        </a>
+        <nav style="display: flex; height: 100%; align-items: center; margin-left: 16px;">
+          <a class="header-nav-link" href="Carbon_Product_Gallery_Strategic_Proposal.html">Proposal & Research</a>
+          <a class="header-nav-link" href="Product_Gallery_Discovery_Homepage.html">Gallery Hub</a>
+          <a class="header-nav-link" href="Visual_Gallery_Layout_Explorations.html">Gallery Layout Options</a>
+          <a class="header-nav-link active" href="V12_Migration_Layout_Explorations.html">V12 Migration Explorer</a>
+        </nav>
+      </div>
+      <div style="font-size: 11px; color: #a8a8a8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">"Carbon in Action" MVP</div>
+    </header>
+
+  <div class="app-frame" id="globalAppContainer">
+    <!-- Top switcher bar -->
+    <nav class="nav-bar">
+      <div class="brand-title">IBM Carbon <span>• V12 Migration Layout Explorations</span></div>
+      <div class="layout-switcher">
+        <button class="switcher-tab active" onclick="switchLayout('beforeAfterSlider')">Before/after slider comparison</button>
+        <button class="switcher-tab" onclick="switchLayout('sideBySide')">Two static images side-by-side</button>
+        <button class="switcher-tab" onclick="switchLayout('stacked')">Two stacked images (above/below)</button>
+        <button class="switcher-tab" onclick="switchLayout('splitCanvas')">Split-canvas synchronized view</button>
+      </div>
+    </nav>
+
+    <!-- Auditing overlays toolbar (inspired by carbon-v12-compare) -->
+    <div class="auditing-overlays-bar">
+      <div class="overlays-title">Compare overlays</div>
+      
+      <button class="overlay-btn" id="overlayBtn-grid" onclick="toggleOverlay('grid')">
+        <div class="overlay-dot"></div>
+        <span>8px Spacing Grid</span>
+      </button>
+
+      <button class="overlay-btn" id="overlayBtn-redlines" onclick="toggleOverlay('redlines')">
+        <div class="overlay-dot purple"></div>
+        <span>Redline Dimensions</span>
+      </button>
+
+      <button class="overlay-btn" id="overlayBtn-case" onclick="toggleOverlay('case')">
+        <div class="overlay-dot green"></div>
+        <span>Grammar Casing Audits</span>
+      </button>
+    </div>
+
+    <!-- Main Workspace Wrapper -->
+    <div class="workspace-wrapper">
+      
+      <!-- Left side: Examples & Screenshots directory library navigation -->
+      <aside class="library-sidebar">
+        <div class="library-sidebar-header">
+          <h3 class="sidebar-section-title">Screens &amp; use cases</h3>
+        </div>
+        
+        <ul class="example-list">
+          <li class="example-item active" id="item-database">
+            <button class="example-btn" onclick="selectExample('database')">
+              <span class="example-name">Database instance dashboard</span>
+              <span class="example-meta">Tighter status telemetry grids, spacing compressions, and list row compacts.</span>
+            </button>
+          </li>
+          <li class="example-item" id="item-aiChat">
+            <button class="example-btn" onclick="selectExample('aiChat')">
+              <span class="example-name">watsonx conversation agent</span>
+              <span class="example-meta">Conversational UI, rounded chat bubbles, status indicators, and compact actions.</span>
+            </button>
+          </li>
+          <li class="example-item" id="item-wizard">
+            <button class="example-btn" onclick="selectExample('wizard')">
+              <span class="example-name">Resource provision wizard</span>
+              <span class="example-meta">Multi-step setup layout, primary button heights, progress line padding, and form case.</span>
+            </button>
+          </li>
+          <li class="example-item" id="item-dataTable">
+            <button class="example-btn" onclick="selectExample('dataTable')">
+              <span class="example-name">High-density assets table</span>
+              <span class="example-meta">Data grids row padding, batch actions drawer styling, and heading cases.</span>
+            </button>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Right side: Core interactive layout area -->
+      <main class="workspace-area">
+
+        <!-- ========================================== -->
+        <!-- EXPLORATION 1: Before/After Slider Comparison -->
+        <!-- ========================================== -->
+        <div class="exploration-canvas active" id="canvas-beforeAfterSlider">
+          <div class="slider-tab-layout">
+            
+            <!-- Slider Sidebar Guidance -->
+            <div class="slider-sidebar">
+              <div>
+                <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 15px; font-weight: 600; border-bottom: 1px solid var(--cds-border-subtle-01); padding-bottom: 12px;">Draggable slider comparison</h3>
+                <p class="cds--type-body-long-01" id="sliderDescText" style="font-size: 12.5px; color: var(--cds-text-secondary); line-height: 1.6;">
+                  This pattern overlays the V11 (Before) and V12 (After) screens in the exact same viewport frame. Drag the blue divider handle back and forth to inspect exact layout differences.
+                </p>
+                
+                <div class="advice-ad-box" style="margin-top: 20px;">
+                  <h4 style="margin-top: 0; font-size: 13px; margin-bottom: 6px;">Evaluation focus</h4>
+                  <ul style="margin: 0; padding-left: 16px; font-size: 11.5px; color: var(--cds-text-secondary); line-height: 1.6;">
+                    <li><strong>Strengths:</strong> Ideal for detecting micro-spacing shifts, changes in typography alignment, and precise element sizes.</li>
+                    <li><strong>Weaknesses:</strong> Restricts the user from viewing both fully-completed screens simultaneously.</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <button class="mock-button" onclick="resetSlider()" style="width: 100%; padding: 10px 16px;">Reset slider center</button>
+            </div>
+
+            <!-- Slider Interactive Area -->
+            <div class="slider-view-viewport">
+              <div class="slider-wrapper grid-overlay-container" id="sliderWrapper">
+                <!-- Repetitive Grid Overlay Layer -->
+                <div class="grid-layer"></div>
+
+                <div class="version-indicator indicator-v11">Carbon V11 Layout</div>
+                <div class="version-indicator indicator-v12">Carbon V12 Layout</div>
+                
+                <!-- Layer Left (V11 UI Content) -->
+                <div class="view-layer layer-v11 v11-screen" id="sliderContainerV11">
+                  <!-- DATABASE HTML DEFAULT -->
+                </div>
+                
+                <!-- Layer Right (V12 UI Content) -->
+                <div class="view-layer layer-v12 v12-screen" id="layerV12">
+                  <div class="v12-screen" id="sliderContainerV12" style="width:100%; height:100%;">
+                    <!-- DATABASE HTML DEFAULT -->
+                  </div>
+                </div>
+                
+                <!-- Interactive handle overlay -->
+                <div class="slider-divider" id="sliderDivider"></div>
+                <div class="slider-handle" id="sliderHandle"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- EXPLORATION 2: Two Static Images Side-by-Side -->
+        <!-- ========================================== -->
+        <div class="exploration-canvas" id="canvas-sideBySide">
+          <div class="side-by-side-layout">
+            
+            <!-- Column 1: V11 Before -->
+            <div class="canvas-panel-card">
+              <div class="canvas-panel-card-header">
+                <h3 style="margin: 0; font-size: 15px; font-weight: 600;">Carbon V11 (Before)</h3>
+                <span class="badge badge-v11">Legacy layout</span>
+              </div>
+              
+              <div class="v11-screen grid-overlay-container" id="sideContainerV11" style="border: 1px solid #e0e0e0; flex-grow: 1;">
+                <!-- Grid overlay layer -->
+                <div class="grid-layer"></div>
+              </div>
+
+              <!-- Callout annotation V11 -->
+              <div class="annotation-bubble">
+                <strong>V11 Design context:</strong>
+                <ul id="annotationListV11" style="margin: 6px 0 0 0; padding-left: 16px; font-size: 12px; color: var(--cds-text-secondary);">
+                  <!-- DYNAMIC -->
+                </ul>
+              </div>
+            </div>
+
+            <!-- Column 2: V12 After -->
+            <div class="canvas-panel-card">
+              <div class="canvas-panel-card-header">
+                <h3 style="margin: 0; font-size: 15px; font-weight: 600;">Carbon V12 (After)</h3>
+                <span class="badge badge-v12">Migrated layout</span>
+              </div>
+
+              <div class="v12-screen grid-overlay-container" id="sideContainerV12" style="border: 1px solid #e0e0e0; flex-grow: 1;">
+                <!-- Grid overlay layer -->
+                <div class="grid-layer"></div>
+              </div>
+
+              <!-- Callout annotation V12 -->
+              <div class="annotation-bubble purple">
+                <strong>V12 Migration value:</strong>
+                <ul id="annotationListV12" style="margin: 6px 0 0 0; padding-left: 16px; font-size: 12px; color: var(--cds-text-secondary);">
+                  <!-- DYNAMIC -->
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- EXPLORATION 3: Two Stacked Images (Above/Below) -->
+        <!-- ========================================== -->
+        <div class="exploration-canvas" id="canvas-stacked">
+          <div class="stacked-layout">
+            
+            <div class="stacked-container">
+              
+              <p class="cds--type-body-long-01" style="font-size: 13px; color: var(--cds-text-secondary); margin-bottom: 24px; text-align: center;">
+                This layout places V11 directly above V12, matching standard vertical browser scrolling flows. Excellent for evaluating page heights, layout grids, and overall document proportions.
+              </p>
+
+              <!-- V11 (Before) Above -->
+              <div class="stacked-header-banner">Carbon V11 Layout (Before)</div>
+              <div class="v11-screen grid-overlay-container" id="stackedContainerV11" style="border: 1px solid #c6c6c6; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <!-- Grid overlay layer -->
+                <div class="grid-layer"></div>
+              </div>
+
+              <!-- V12 (After) Below -->
+              <div class="stacked-header-banner v12">Carbon V12 Layout (After)</div>
+              <div class="v12-screen grid-overlay-container" id="stackedContainerV12" style="border: 1px solid var(--cds-interactive-01); margin-bottom: 32px; box-shadow: 0 4px 16px rgba(15, 98, 254, 0.15);">
+                <!-- Grid overlay layer -->
+                <div class="grid-layer"></div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- EXPLORATION 4: Split-Canvas Synchronized View -->
+        <!-- ========================================== -->
+        <div class="exploration-canvas" id="canvas-splitCanvas">
+          <div class="split-canvas-layout">
+            
+            <!-- Sync Sidebar Guidance -->
+            <div class="split-canvas-sidebar">
+              <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 15px; font-weight: 600; border-bottom: 1px solid var(--cds-border-subtle-01); padding-bottom: 8px;">Synchronized view</h3>
+              <p class="cds--type-body-long-01" style="font-size: 12px; color: var(--cds-text-secondary); line-height: 1.6; margin-bottom: 16px;">
+                Both panels scroll simultaneously. Hovering over any labeled segment on one side instantly highlights its companion element on the opposite canvas.
+              </p>
+              
+              <div class="advice-ad-box">
+                <h4 style="margin-top: 0; font-size: 12px; margin-bottom: 4px;">User testing note</h4>
+                <p style="font-size: 11px; color: var(--cds-text-secondary); line-height: 1.5; margin: 0;">
+                  Evaluate if users prefer linked highlight frames or visual sliders for detecting grid alignments.
+                </p>
+              </div>
+            </div>
+
+            <!-- V11 Column -->
+            <div class="split-canvas-container v11-screen grid-overlay-container" id="syncContainerV11">
+              <!-- Grid overlay layer -->
+              <div class="grid-layer"></div>
+              <!-- DYNAMIC CODE GENERATED IN SCRIPT -->
+            </div>
+
+            <!-- V12 Column -->
+            <div class="split-canvas-container v12-screen grid-overlay-container" id="syncContainerV12">
+              <!-- Grid overlay layer -->
+              <div class="grid-layer"></div>
+              <!-- DYNAMIC CODE GENERATED IN SCRIPT -->
+            </div>
+
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // EXAMPLES AND BLUEPRINTS DATA MODEL
+    // ==========================================
+    const examples = {
+      database: {
+        name: "Database instance dashboard",
+        syncNodes: [
+          {
+            id: "header",
+            label: "A. Header bar & title-case check",
+            v11: `
+              <div class="mock-header" style="padding-bottom: 12px; margin-bottom: 0;">
+                <div class="redline-indicator" style="top: 0; right: 0;">H: 48px | Pad: 12px</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs" style="font-size: 11px; color: #525252; margin-bottom: 2px;">infrastructure / server / status</div>
+                    <div class="case-highlight">
+                      <div class="case-highlight-border"></div>
+                      <div class="case-badge-label">Title Case</div>
+                      <h2 class="mock-title" style="font-size: 18px; font-weight: 400; margin: 0;">Active Database Instance</h2>
+                    </div>
+                  </div>
+                  <button class="mock-button" style="background-color: var(--cds-interactive-01); color: #ffffff; border: none; padding: 12px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer;">Provision Node</button>
+                </div>
+              </div>
+            `,
+            v12: `
+              <div class="mock-header" style="padding-bottom: 12px; margin-bottom: 0;">
+                <div class="redline-indicator" style="top: 8px; right: 0;">H: 40px | Pad: 8px</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs" style="font-size: 11px; color: #525252; margin-bottom: 2px;">infrastructure / server / status</div>
+                    <div class="case-highlight">
+                      <div class="case-highlight-border"></div>
+                      <div class="case-badge-label">Sentence Case</div>
+                      <h2 class="mock-title" style="font-size: 18px; font-weight: 400; margin: 0;">Active database instance</h2>
+                    </div>
+                  </div>
+                  <button class="mock-button" style="background-color: var(--cds-interactive-01); color: #ffffff; border: none; padding: 8px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer;">Provision node</button>
+                </div>
+              </div>
+            `
+          },
+          {
+            id: "metrics",
+            label: "B. Metric tiles & rounded corners",
+            v11: `
+              <div class="mock-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 0; position: relative;">
+                <div class="redline-indicator" style="top: -12px; left: 0;">Radius: 0px | Padding: 12px</div>
+                <div class="mock-card" style="border: 1px solid #e0e0e0; background-color: #ffffff; padding: 12px; border-radius: 0;">
+                  <div class="mock-card-label" style="font-size: 11px; color: #525252; margin-bottom: 4px;">Cluster Health</div>
+                  <div class="mock-card-value" style="font-size: 20px; font-weight: 300; color: #da1e28;">degraded</div>
+                </div>
+                <div class="mock-card" style="border: 1px solid #e0e0e0; background-color: #ffffff; padding: 12px; border-radius: 0;">
+                  <div class="mock-card-label" style="font-size: 11px; color: #525252; margin-bottom: 4px;">Storage Utilization</div>
+                  <div class="mock-card-value" style="font-size: 20px; font-weight: 300;">78.4%</div>
+                </div>
+                <div class="mock-card" style="border: 1px solid #e0e0e0; background-color: #ffffff; padding: 12px; border-radius: 0;">
+                  <div class="mock-card-label" style="font-size: 11px; color: #525252; margin-bottom: 4px;">Active Connections</div>
+                  <div class="mock-card-value" style="font-size: 20px; font-weight: 300;">1,402</div>
+                </div>
+              </div>
+            `,
+            v12: `
+              <div class="mock-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 0; position: relative;">
+                <div class="redline-indicator" style="top: -12px; left: 0;">Radius: 12px | Padding: 12px</div>
+                <div class="mock-card" style="border: 1px solid #e0e0e0; background-color: #f4f4f4; padding: 12px; border-radius: 12px;">
+                  <div class="mock-card-label" style="font-size: 11px; color: #525252; margin-bottom: 4px;">Cluster health</div>
+                  <div class="mock-card-value" style="font-size: 20px; font-weight: 300; color: #da1e28;">Degraded</div>
+                </div>
+                <div class="mock-card" style="border: 1px solid #e0e0e0; background-color: #f4f4f4; padding: 12px; border-radius: 12px;">
+                  <div class="mock-card-label" style="font-size: 11px; color: #525252; margin-bottom: 4px;">Storage utilization</div>
+                  <div class="mock-card-value" style="font-size: 20px; font-weight: 300;">78.4%</div>
+                </div>
+                <div class="mock-card" style="border: 1px solid #e0e0e0; background-color: #f4f4f4; padding: 12px; border-radius: 12px;">
+                  <div class="mock-card-label" style="font-size: 11px; color: #525252; margin-bottom: 4px;">Active connections</div>
+                  <div class="mock-card-value" style="font-size: 20px; font-weight: 300;">1,402</div>
+                </div>
+              </div>
+            `
+          },
+          {
+            id: "replicas",
+            label: "C. Table row item density",
+            v11: `
+              <div style="margin-top: 0; position: relative;">
+                <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #525252;">Active Database Replicas</div>
+                <div class="redline-indicator" style="bottom: 0; left: 0;">Row Height: 44px</div>
+                <div class="mock-row-item" style="padding: 16px 12px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--cds-border-subtle-01); align-items: center; background-color: #ffffff;">
+                  <span>db-node-primary-dal10</span>
+                  <span class="mock-status-badge" style="font-size: 10px; font-weight: 500; padding: 2px 6px; background-color: #e0e0e0; color: #161616; text-transform: lowercase;">healthy</span>
+                </div>
+                <div class="mock-row-item" style="padding: 16px 12px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--cds-border-subtle-01); align-items: center; background-color: #ffffff;">
+                  <span>db-node-replica-lon02</span>
+                  <span class="mock-status-badge" style="font-size: 10px; font-weight: 500; padding: 2px 6px; background-color: #e0e0e0; color: #161616; text-transform: lowercase;">degraded</span>
+                </div>
+              </div>
+            `,
+            v12: `
+              <div style="margin-top: 0; position: relative;">
+                <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #525252;">Active database replicas</div>
+                <div class="redline-indicator" style="bottom: 0; left: 0;">Row Height: 34px</div>
+                <div class="mock-row-item" style="padding: 8px 12px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--cds-border-subtle-01); align-items: center; background-color: #ffffff;">
+                  <span>db-node-primary-dal10</span>
+                  <span class="mock-status-badge" style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background-color: #edf5ff; color: #0043ce; border: 1px solid #d0e2ff; text-transform: uppercase;">Healthy</span>
+                </div>
+                <div class="mock-row-item" style="padding: 8px 12px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--cds-border-subtle-01); align-items: center; background-color: #ffffff;">
+                  <span>db-node-replica-lon02</span>
+                  <span class="mock-status-badge" style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background-color: #fff0f1; color: #da1e28; border: 1px solid #ffd7d9; text-transform: uppercase;">Degraded</span>
+                </div>
+              </div>
+            `
+          }
+        ],
+        meta: "Tighter status telemetry grids, spacing compressions, and list row compacts.",
+        sliderText: "This pattern overlays the V11 (Before) and V12 (After) screens in the exact same viewport frame. Drag the blue divider handle back and forth to inspect database telemetry row spacing differences.",
+        v11Html: `
+          <div class="mock-screen">
+            <div class="mock-header">
+              <div class="redline-indicator" style="top: 0; right: 0;">H: 48px | Pad: 12px</div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="mock-breadcrumbs">infrastructure / server / status</div>
+                  <div class="case-highlight">
+                    <div class="case-highlight-border"></div>
+                    <div class="case-badge-label">Title Case</div>
+                    <h2 class="mock-title">Active Database Instance</h2>
+                  </div>
+                </div>
+                <button class="mock-button">Provision Node</button>
+              </div>
+            </div>
+            
+            <div class="mock-row">
+              <div class="redline-indicator" style="top: -12px; left: 0;">Radius: 0px | Padding: 12px</div>
+              <div class="mock-card">
+                <div class="mock-card-label">Cluster Health</div>
+                <div class="mock-card-value" style="color: #da1e28;">degraded</div>
+              </div>
+              <div class="mock-card">
+                <div class="mock-card-label">Storage Utilization</div>
+                <div class="mock-card-value">78.4%</div>
+              </div>
+              <div class="mock-card">
+                <div class="mock-card-label">Active Connections</div>
+                <div class="mock-card-value">1,402</div>
+              </div>
+            </div>
+            
+            <div style="margin-top: 8px;">
+              <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #525252;">Active Database Replicas</div>
+              <div class="redline-indicator" style="bottom: 0; left: 0;">Row Height: 44px</div>
+              <div class="mock-row-item">
+                <span>db-node-primary-dal10</span>
+                <span class="mock-status-badge">healthy</span>
+              </div>
+              <div class="mock-row-item">
+                <span>db-node-replica-lon02</span>
+                <span class="mock-status-badge">degraded</span>
+              </div>
+            </div>
+          </div>
+        `,
+        v12Html: `
+          <div class="mock-screen">
+            <div class="mock-header">
+              <div class="redline-indicator" style="top: 8px; right: 0;">H: 40px | Pad: 8px</div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="mock-breadcrumbs">infrastructure / server / status</div>
+                  <div class="case-highlight">
+                    <div class="case-highlight-border"></div>
+                    <div class="case-badge-label">Sentence Case</div>
+                    <h2 class="mock-title">Active database instance</h2>
+                  </div>
+                </div>
+                <button class="mock-button">Provision node</button>
+              </div>
+            </div>
+            
+            <div class="mock-row">
+              <div class="redline-indicator" style="top: -12px; left: 0;">Radius: 12px | Padding: 12px</div>
+              <div class="mock-card" style="border-radius: 12px;">
+                <div class="mock-card-label">Cluster health</div>
+                <div class="mock-card-value" style="color: #da1e28;">Degraded</div>
+              </div>
+              <div class="mock-card" style="border-radius: 12px;">
+                <div class="mock-card-label">Storage utilization</div>
+                <div class="mock-card-value">78.4%</div>
+              </div>
+              <div class="mock-card" style="border-radius: 12px;">
+                <div class="mock-card-label">Active connections</div>
+                <div class="mock-card-value">1,402</div>
+              </div>
+            </div>
+            
+            <div style="margin-top: 8px;">
+              <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #525252;">Active database replicas</div>
+              <div class="redline-indicator" style="bottom: 0; left: 0;">Row Height: 34px</div>
+              <div class="mock-row-item">
+                <span>db-node-primary-dal10</span>
+                <span class="mock-status-badge">Healthy</span>
+              </div>
+              <div class="mock-row-item">
+                <span>db-node-replica-lon02</span>
+                <span class="mock-status-badge" style="background-color: #fff0f1; color: #da1e28; border: 1px solid #ffd7d9;">Degraded</span>
+              </div>
+            </div>
+          </div>
+        `,
+        v11Anns: [
+          "Sharp square corners on status metric cards create high visual distraction.",
+          "Database action buttons utilize classic 12px top/bottom padding rules.",
+          "Title case headers create layout reading friction on telemetry pages."
+        ],
+        v12Anns: [
+          "Rounded corners (12px) and subtle flat grey block tiles provide spacious structural clarity.",
+          "Slimmer primary action button paddings (8px) fit cleaner inside action bars.",
+          "Expressive status pill tags with border outlines emphasize degradation events instantly."
+        ]
+      },
+      aiChat: {
+        name: "watsonx conversation agent",
+        syncNodes: [
+          {
+            id: "header",
+            label: "A. Chat Title Header & Status",
+            v11: `
+              <div class="mock-header" style="padding-bottom: 12px; margin-bottom: 0;">
+                <div class="redline-indicator" style="top: 0; right: 0;">H: 48px</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs" style="font-size: 11px; color: #525252; margin-bottom: 2px;">watsonx / assistant / workspace</div>
+                    <div class="case-highlight">
+                      <div class="case-highlight-border"></div>
+                      <div class="case-badge-label">Title Case</div>
+                      <h2 class="mock-title" style="font-size: 18px; font-weight: 400; margin: 0;">Watsonx Conversational Agent</h2>
+                    </div>
+                  </div>
+                  <span class="mock-status-badge" style="font-size: 10px; font-weight: 500; padding: 2px 6px; background-color: #e0e0e0; color: #161616; text-transform: lowercase;">agent working</span>
+                </div>
+              </div>
+            `,
+            v12: `
+              <div class="mock-header" style="padding-bottom: 12px; margin-bottom: 0;">
+                <div class="redline-indicator" style="top: 8px; right: 0;">H: 40px</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs" style="font-size: 11px; color: #525252; margin-bottom: 2px;">watsonx / assistant / workspace</div>
+                    <div class="case-highlight">
+                      <div class="case-highlight-border"></div>
+                      <div class="case-badge-label">Sentence Case</div>
+                      <h2 class="mock-title" style="font-size: 18px; font-weight: 400; margin: 0;">watsonx conversational agent</h2>
+                    </div>
+                  </div>
+                  <span class="mock-status-badge" style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background-color: #edf5ff; color: #0043ce; border: 1px solid #d0e2ff; text-transform: uppercase;">Agent thinking</span>
+                </div>
+              </div>
+            `
+          },
+          {
+            id: "bubbles",
+            label: "B. Chat Bubbles & Radius",
+            v11: `
+              <div style="min-height: 120px; display: flex; flex-direction: column; justify-content: flex-end; position: relative;">
+                <div class="mock-chat-bubble" style="background-color: #edf5ff; color: #161616; padding: 12px 16px; margin-bottom: 8px; max-width: 85%; align-self: flex-start; border-radius: 0; font-size: 13px; line-height: 1.5; position: relative;">
+                  <div class="redline-indicator" style="top: -12px; left: 0;">Radius: 0px</div>
+                  Hello, I am Watson. How can I assist you with your cloud deployment parameters today?
+                </div>
+                <div class="mock-chat-bubble" style="align-self: flex-end; background-color: #0f62fe; color: #ffffff; padding: 12px 16px; margin-bottom: 8px; max-width: 85%; border-radius: 0; font-size: 13px; line-height: 1.5;">
+                  I need to provision a new db-node replica in region Dal10.
+                </div>
+              </div>
+            `,
+            v12: `
+              <div style="min-height: 120px; display: flex; flex-direction: column; justify-content: flex-end; position: relative;">
+                <div class="mock-chat-bubble" style="background-color: #f4f4f4; color: #161616; padding: 12px 16px; margin-bottom: 8px; max-width: 85%; align-self: flex-start; border-radius: 16px; font-size: 13px; line-height: 1.5; position: relative;">
+                  <div class="redline-indicator" style="top: -12px; left: 0;">Radius: 16px</div>
+                  Hello, I am watsonx. How can I assist you with your cloud deployment parameters today?
+                </div>
+                <div class="mock-chat-bubble" style="align-self: flex-end; background-color: #0f62fe; color: #ffffff; padding: 12px 16px; margin-bottom: 8px; max-width: 85%; border-radius: 16px 16px 0 16px; font-size: 13px; line-height: 1.5;">
+                  I need to provision a new db-node replica in region Dal10.
+                </div>
+              </div>
+            `
+          },
+          {
+            id: "prompt",
+            label: "C. Prompt input height & casing",
+            v11: `
+              <div style="display: flex; gap: 8px; align-items: flex-end; position: relative;">
+                <input type="text" class="mock-input" value="Show me active database nodes..." style="flex-grow: 1; height: 48px; border: 1px solid #8d8d8d; padding: 0 16px; font-size: 14px;">
+                <button class="mock-button" style="background-color: #0f62fe; color: #ffffff; border: none; height: 48px; padding: 0 24px; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 12px;">SUBMIT PROMPT</button>
+              </div>
+            `,
+            v12: `
+              <div style="display: flex; gap: 8px; align-items: flex-end; position: relative;">
+                <input type="text" class="mock-input" value="Show me active database nodes..." style="flex-grow: 1; height: 38px; border: 1px solid #8d8d8d; padding: 0 12px; font-size: 13px; border-radius: 4px;">
+                <button class="mock-button" style="background-color: #0f62fe; color: #ffffff; border: none; height: 38px; padding: 0 16px; font-weight: 600; cursor: pointer; font-size: 12.5px;">Send prompt</button>
+              </div>
+            `
+          }
+        ],
+        meta: "Conversational UI, rounded chat bubbles, status indicators, and compact actions.",
+        sliderText: "This pattern overlays V11 and V12 conversational screens. Drag the handle to inspect how V12 designs round speech bubbles, style thinking states, and compact message buttons.",
+        v11Html: `
+          <div class="mock-screen">
+            <div class="mock-header">
+              <div class="redline-indicator" style="top: 0; right: 0;">H: 48px</div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="mock-breadcrumbs">watsonx / assistant / workspace</div>
+                  <div class="case-highlight">
+                    <div class="case-highlight-border"></div>
+                    <div class="case-badge-label">Title Case</div>
+                    <h2 class="mock-title">Watsonx Conversational Agent</h2>
+                  </div>
+                </div>
+                <span class="mock-status-badge" style="background-color: #e0e0e0; color: #161616;">agent working</span>
+              </div>
+            </div>
+            
+            <div style="flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; justify-content: flex-end;">
+              <div class="mock-chat-bubble">
+                <div class="redline-indicator" style="top: -12px; left: 0;">Radius: 0px</div>
+                Hello, I am Watson. How can I assist you with your cloud deployment parameters today?
+              </div>
+              <div class="mock-chat-bubble" style="align-self: flex-end; background-color: #0f62fe; color: #ffffff;">
+                I need to provision a new db-node replica in region Dal10.
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 8px;">
+              <input type="text" class="mock-input" value="Show me active database nodes...">
+              <button class="mock-button" style="margin-top: 12px; height: 48px;">SUBMIT PROMPT</button>
+            </div>
+          </div>
+        `,
+        v12Html: `
+          <div class="mock-screen">
+            <div class="mock-header">
+              <div class="redline-indicator" style="top: 8px; right: 0;">H: 40px</div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="mock-breadcrumbs">watsonx / assistant / workspace</div>
+                  <div class="case-highlight">
+                    <div class="case-highlight-border"></div>
+                    <div class="case-badge-label">Sentence Case</div>
+                    <h2 class="mock-title">watsonx conversational agent</h2>
+                  </div>
+                </div>
+                <span class="mock-status-badge" style="background-color: #edf5ff; color: #0043ce; border: 1px solid #d0e2ff;">Agent thinking</span>
+              </div>
+            </div>
+            
+            <div style="flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; justify-content: flex-end;">
+              <div class="mock-chat-bubble" style="border-radius: 16px;">
+                <div class="redline-indicator" style="top: -12px; left: 0;">Radius: 16px</div>
+                Hello, I am watsonx. How can I assist you with your cloud deployment parameters today?
+              </div>
+              <div class="mock-chat-bubble" style="align-self: flex-end; background-color: #0f62fe; color: #ffffff; border-radius: 16px 16px 0 16px;">
+                I need to provision a new db-node replica in region Dal10.
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 8px; align-items: flex-end;">
+              <input type="text" class="mock-input" value="Show me active database nodes...">
+              <button class="mock-button" style="height: 38px;">Send prompt</button>
+            </div>
+          </div>
+        `,
+        v11Anns: [
+          "Sharp, blocky message bubbles create high visual weight.",
+          "Submit button uses all-caps text and high height borders (48px).",
+          "Status badges use lowercase text without color accent identifiers."
+        ],
+        v12Anns: [
+          "Rounded message bubbles (16px border-radius) present a softer, modern, conversational workspace.",
+          "Prompt button uses unified Sentence Case, sleek heights, and compact paddings.",
+          "Agent thinking status tags use expressive color backgrounds with protective border tags."
+        ]
+      },
+      wizard: {
+        name: "Resource provision wizard",
+        syncNodes: [
+          {
+            id: "header",
+            label: "A. Setup Title & Step Height",
+            v11: `
+              <div class="mock-header" style="padding-bottom: 12px; margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs" style="font-size: 11px; color: #525252; margin-bottom: 2px;">provision / setup</div>
+                    <div class="case-highlight">
+                      <div class="case-highlight-border"></div>
+                      <div class="case-badge-label">Title Case</div>
+                      <h2 class="mock-title" style="font-size: 18px; font-weight: 400; margin: 0;">Deploy Virtual Instance Cluster</h2>
+                    </div>
+                  </div>
+                  <div class="redline-indicator" style="top: 0; right: 0;">Step Height: 60px</div>
+                </div>
+              </div>
+            `,
+            v12: `
+              <div class="mock-header" style="padding-bottom: 12px; margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs" style="font-size: 11px; color: #525252; margin-bottom: 2px;">provision / setup</div>
+                    <div class="case-highlight">
+                      <div class="case-highlight-border"></div>
+                      <div class="case-badge-label">Sentence Case</div>
+                      <h2 class="mock-title" style="font-size: 18px; font-weight: 400; margin: 0;">Deploy virtual instance cluster</h2>
+                    </div>
+                  </div>
+                  <div class="redline-indicator" style="top: 8px; right: 0;">Step Height: 44px</div>
+                </div>
+              </div>
+            `
+          },
+          {
+            id: "stepper",
+            label: "B. Steps Progress Density & Labels",
+            v11: `
+              <div style="display: flex; gap: 32px; position: relative;">
+                <div style="width: 160px; font-size: 13px;">
+                  <div style="color: #0f62fe; font-weight: bold; margin-bottom: 24px;">1. Cluster Details</div>
+                  <div style="color: #525252; margin-bottom: 24px;">2. Storage Setup</div>
+                  <div style="color: #525252;">3. Final Review</div>
+                </div>
+                <div style="flex-grow: 1; font-size: 12px; color: #6f6f6f; padding-top: 4px;">
+                  Standard left-side multi-step layout with loose vertical cell margin settings.
+                </div>
+              </div>
+            `,
+            v12: `
+              <div style="display: flex; gap: 32px; position: relative;">
+                <div style="width: 160px; font-size: 12px;">
+                  <div style="color: #0f62fe; font-weight: 600; margin-bottom: 16px;">1. Cluster details</div>
+                  <div style="color: #525252; margin-bottom: 16px;">2. Storage setup</div>
+                  <div style="color: #525252;">3. Final review</div>
+                </div>
+                <div style="flex-grow: 1; font-size: 12px; color: #6f6f6f; padding-top: 4px;">
+                  Standard left-side multi-step layout with compressed 16px step gaps.
+                </div>
+              </div>
+            `
+          },
+          {
+            id: "form",
+            label: "C. Form Fields & Action buttons",
+            v11: `
+              <div style="position: relative;">
+                <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 8px; text-transform: uppercase;">CLUSTER NAME (Title Case)</label>
+                <input type="text" class="mock-input" value="Primary-Dal10-Server" style="width: 100%; height: 44px; border: 1px solid #8d8d8d; padding: 0 12px; margin-bottom: 16px;">
+                <div style="display: flex; gap: 12px;">
+                  <button class="mock-button" style="background-color: var(--cds-interactive-01); color: #ffffff; border: none; padding: 12px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer;">CONTINUE TO SETUP</button>
+                  <button style="background: transparent; border: 1px solid #c6c6c6; padding: 12px 20px; font-size: 13.5px; cursor: pointer;">Cancel</button>
+                </div>
+              </div>
+            `,
+            v12: `
+              <div style="position: relative;">
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Cluster name</label>
+                <input type="text" class="mock-input" value="Primary-Dal10-Server" style="width: 100%; height: 38px; border: 1px solid #8d8d8d; padding: 0 12px; border-radius: 4px; margin-bottom: 16px;">
+                <div style="display: flex; gap: 12px;">
+                  <button class="mock-button" style="background-color: var(--cds-interactive-01); color: #ffffff; border: none; padding: 8px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer;">Continue to setup</button>
+                  <button style="background: transparent; border: 1px solid #e0e0e0; padding: 8px 16px; font-size: 12.5px; cursor: pointer; border-radius: 4px;">Cancel</button>
+                </div>
+              </div>
+            `
+          }
+        ],
+        meta: "Multi-step setup layout, primary button heights, progress line padding, and form case.",
+        sliderText: "This pattern overlays the wizard setup flows. Drag the central slider handle to compare button paddings, input borders, and step progress line spacings.",
+        v11Html: `
+          <div class="mock-screen">
+            <div class="mock-header">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="mock-breadcrumbs">provision / setup</div>
+                  <div class="case-highlight">
+                    <div class="case-highlight-border"></div>
+                    <div class="case-badge-label">Title Case</div>
+                    <h2 class="mock-title">Deploy Virtual Instance Cluster</h2>
+                  </div>
+                </div>
+                <div class="redline-indicator" style="top: 0; right: 0;">Step Height: 60px</div>
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 32px; margin-top: 16px;">
+              <div style="width: 160px; font-size: 13px;">
+                <div style="color: #0f62fe; font-weight: bold; margin-bottom: 24px;">1. Cluster Details</div>
+                <div style="color: #525252; margin-bottom: 24px;">2. Storage Setup</div>
+                <div style="color: #525252;">3. Final Review</div>
+              </div>
+              
+              <div style="flex-grow: 1;">
+                <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 8px;">CLUSTER NAME (Title Case)</label>
+                <input type="text" class="mock-input" value="Primary-Dal10-Server">
+                
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                  <button class="mock-button">CONTINUE TO SETUP</button>
+                  <button style="background: transparent; border: 1px solid #c6c6c6; padding: 12px 20px; font-size: 13.5px;">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        v12Html: `
+          <div class="mock-screen">
+            <div class="mock-header">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="mock-breadcrumbs">provision / setup</div>
+                  <div class="case-highlight">
+                    <div class="case-highlight-border"></div>
+                    <div class="case-badge-label">Sentence Case</div>
+                    <h2 class="mock-title">Deploy virtual instance cluster</h2>
+                  </div>
+                </div>
+                <div class="redline-indicator" style="top: 8px; right: 0;">Step Height: 44px</div>
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 32px; margin-top: 16px;">
+              <div style="width: 160px; font-size: 12px;">
+                <div style="color: #0f62fe; font-weight: 600; margin-bottom: 16px;">1. Cluster details</div>
+                <div style="color: #525252; margin-bottom: 16px;">2. Storage setup</div>
+                <div style="color: #525252;">3. Final review</div>
+              </div>
+              
+              <div style="flex-grow: 1;">
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Cluster name</label>
+                <input type="text" class="mock-input" value="Primary-Dal10-Server">
+                
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                  <button class="mock-button">Continue to setup</button>
+                  <button style="background: transparent; border: 1px solid #e0e0e0; padding: 8px 16px; font-size: 12px;">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        v11Anns: [
+          "Steps sidebar uses wide 24px vertical paddings, wasting vertical workspace space.",
+          "Buttons use full uppercase block labels (e.g. CONTINUE TO SETUP).",
+          "Form labels use full uppercase Title Case configurations."
+        ],
+        v12Anns: [
+          "Steps sidebar vertical spacing compressed to 16px, maximizing grid density.",
+          "All buttons and action components use clean, readable Sentence Case layouts.",
+          "Compact input padding and standardized field-level description casing alignments."
+        ]
+      },
+      dataTable: {
+        name: "High-density assets table",
+        syncNodes: [
+          {
+            id: "header",
+            label: "A. Table Title Header & Heights",
+            v11: `
+              <div class="mock-header" style="padding-bottom: 12px; margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs" style="font-size: 11px; color: #525252; margin-bottom: 2px;">assets / listing</div>
+                    <div class="case-highlight">
+                      <div class="case-highlight-border"></div>
+                      <div class="case-badge-label">Title Case</div>
+                      <h2 class="mock-title" style="font-size: 18px; font-weight: 400; margin: 0;">Active Host Servers Directory</h2>
+                    </div>
+                  </div>
+                  <div class="redline-indicator" style="top: 0; right: 0;">Row Height: 52px</div>
+                </div>
+              </div>
+            `,
+            v12: `
+              <div class="mock-header" style="padding-bottom: 12px; margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div class="mock-breadcrumbs" style="font-size: 11px; color: #525252; margin-bottom: 2px;">assets / listing</div>
+                    <div class="case-highlight">
+                      <div class="case-highlight-border"></div>
+                      <div class="case-badge-label">Sentence Case</div>
+                      <h2 class="mock-title" style="font-size: 18px; font-weight: 400; margin: 0;">Active host servers directory</h2>
+                    </div>
+                  </div>
+                  <div class="redline-indicator" style="top: 8px; right: 0;">Row Height: 38px</div>
+                </div>
+              </div>
+            `
+          },
+          {
+            id: "bulk",
+            label: "B. Bulk Actions Selection Drawer",
+            v11: `
+              <div style="background-color: #da1e28; color: #ffffff; padding: 12px 16px; font-size: 13px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; position: relative;">
+                <span>2 ITEMS SELECTED</span>
+                <span style="text-decoration: underline; cursor: pointer;">DELETE ALL</span>
+              </div>
+            `,
+            v12: `
+              <div style="background-color: #0f62fe; color: #ffffff; padding: 8px 16px; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; position: relative;">
+                <span>2 items selected</span>
+                <span style="text-decoration: underline; cursor: pointer;">Delete all</span>
+              </div>
+            `
+          },
+          {
+            id: "grid",
+            label: "C. Data Grid Spacings & Density",
+            v11: `
+              <div style="border: 1px solid #c6c6c6; position: relative;">
+                <div class="mock-row-item" style="padding: 16px 12px; display: flex; justify-content: space-between; border-bottom: 1px solid #c6c6c6; background-color: #ffffff;">
+                  <strong style="text-transform: uppercase; font-size: 11px;">HOST NAME</strong>
+                  <strong style="text-transform: uppercase; font-size: 11px;">LOCATION</strong>
+                  <strong style="text-transform: uppercase; font-size: 11px;">STATUS</strong>
+                </div>
+                <div class="mock-row-item" style="padding: 16px 12px; display: flex; justify-content: space-between; background-color: #ffffff;">
+                  <span>server-dal10-01</span>
+                  <span>Dallas 10</span>
+                  <span class="mock-status-badge" style="font-size: 10px; font-weight: 500; padding: 2px 6px; background-color: #e0e0e0; color: #161616; text-transform: lowercase;">healthy</span>
+                </div>
+              </div>
+            `,
+            v12: `
+              <div style="border: 1px solid #e0e0e0; position: relative;">
+                <div class="mock-row-item" style="padding: 10px 12px; background-color: #f4f4f4; font-weight: 600; display: flex; justify-content: space-between; border-bottom: 1px solid #e0e0e0;">
+                  <span>Host name</span>
+                  <span>Location</span>
+                  <span>Status</span>
+                </div>
+                <div class="mock-row-item" style="padding: 10px 12px; display: flex; justify-content: space-between; background-color: #ffffff;">
+                  <span>server-dal10-01</span>
+                  <span>Dallas 10</span>
+                  <span class="mock-status-badge" style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background-color: #edf5ff; color: #0043ce; border: 1px solid #d0e2ff; text-transform: uppercase;">Healthy</span>
+                </div>
+              </div>
+            `
+          }
+        ],
+        meta: "Data grids row padding, batch actions drawer styling, and heading cases.",
+        sliderText: "This pattern overlays data grid setups. Slide to compare row height compressions, grid alignments, and multi-line select action bars.",
+        v11Html: `
+          <div class="mock-screen">
+            <div class="mock-header">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="mock-breadcrumbs">assets / listing</div>
+                  <div class="case-highlight">
+                    <div class="case-highlight-border"></div>
+                    <div class="case-badge-label">Title Case</div>
+                    <h2 class="mock-title">Active Host Servers Directory</h2>
+                  </div>
+                </div>
+                <div class="redline-indicator" style="top: 0; right: 0;">Row Height: 52px</div>
+              </div>
+            </div>
+            
+            <div style="border: 1px solid #c6c6c6;">
+              <div style="background-color: #da1e28; color: #ffffff; padding: 12px 16px; font-size: 13px; font-weight: bold; display: flex; justify-content: space-between;">
+                <span>2 ITEMS SELECTED</span>
+                <span style="text-decoration: underline; cursor: pointer;">DELETE ALL</span>
+              </div>
+              <div class="mock-row-item" style="padding: 16px 12px;">
+                <strong>HOST NAME</strong>
+                <strong>LOCATION</strong>
+                <strong>STATUS</strong>
+              </div>
+              <div class="mock-row-item" style="padding: 16px 12px;">
+                <span>server-dal10-01</span>
+                <span>Dallas 10</span>
+                <span class="mock-status-badge">healthy</span>
+              </div>
+            </div>
+          </div>
+        `,
+        v12Html: `
+          <div class="mock-screen">
+            <div class="mock-header">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="mock-breadcrumbs">assets / listing</div>
+                  <div class="case-highlight">
+                    <div class="case-highlight-border"></div>
+                    <div class="case-badge-label">Sentence Case</div>
+                    <h2 class="mock-title">Active host servers directory</h2>
+                  </div>
+                </div>
+                <div class="redline-indicator" style="top: 8px; right: 0;">Row Height: 38px</div>
+              </div>
+            </div>
+            
+            <div style="border: 1px solid #e0e0e0;">
+              <div style="background-color: #0f62fe; color: #ffffff; padding: 8px 16px; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between;">
+                <span>2 items selected</span>
+                <span style="text-decoration: underline; cursor: pointer;">Delete all</span>
+              </div>
+              <div class="mock-row-item" style="padding: 10px 12px; background-color: #f4f4f4; font-weight: 600;">
+                <span>Host name</span>
+                <span>Location</span>
+                <span>Status</span>
+              </div>
+              <div class="mock-row-item">
+                <span>server-dal10-01</span>
+                <span>Dallas 10</span>
+                <span class="mock-status-badge">Healthy</span>
+              </div>
+            </div>
+          </div>
+        `,
+        v11Anns: [
+          "Table row heights are set to 52px (very loose padding), which reduces the density on server listings.",
+          "Table column headers use rigid, heavy bold uppercase lettering.",
+          "Multi-select batch action drawers use warning red themes that create false alarms."
+        ],
+        v12Anns: [
+          "Table row heights compressed to 38px, optimizing server listings for dense monitoring screens.",
+          "Table column headers follow Sentence Case guidelines to increase readability.",
+          "Multi-select batch action drawer utilizes an elegant Carbon blue theme (`#0f62fe`) with simple lowercase actions."
+        ]
+      }
+    };
+
+    // ==========================================
+    // SELECTION & REDRAW CONTROLLER
+    // ==========================================
+    let activeExampleId = "database";
+
+    function selectExample(id) {
+      activeExampleId = id;
+      
+      // Update sidebar nav active classes
+      document.querySelectorAll(".example-item").forEach(item => {
+        item.classList.remove("active");
+      });
+      document.getElementById(`item-${id}`).classList.add("active");
+
+      // Redraw active screens across all canvases
+      renderActiveExample();
+    }
+
+    function renderActiveExample() {
+      const data = examples[activeExampleId];
+      
+      // 1. Update descriptions in active sidebars
+      document.getElementById("sliderDescText").textContent = data.sliderText;
+
+      // 2. Overwrite HTML viewports across all layout containers
+      // Slider
+      document.getElementById("sliderContainerV11").innerHTML = data.v11Html;
+      document.getElementById("sliderContainerV12").innerHTML = data.v12Html;
+
+      // Side-by-Side
+      document.getElementById("sideContainerV11").innerHTML = data.v11Html;
+      document.getElementById("sideContainerV12").innerHTML = data.v12Html;
+
+      // Stacked
+      document.getElementById("stackedContainerV11").innerHTML = data.v11Html;
+      document.getElementById("stackedContainerV12").innerHTML = data.v12Html;
+
+      // Split-Canvas Synchronized columns
+      setupSplitCanvasHover(data);
+
+      // 3. Update side-by-side annotations
+      const annListV11 = document.getElementById("annotationListV11");
+      const annListV12 = document.getElementById("annotationListV12");
+      
+      annListV11.innerHTML = data.v11Anns.map(ann => `<li>${ann}</li>`).join("");
+      annListV12.innerHTML = data.v12Anns.map(ann => `<li>${ann}</li>`).join("");
+
+      // 4. Force Reset Slider clip-paths
+      resetSlider();
+    }
+
+    // Dynamic, interactive setup for hover synchronized split-columns
+    function setupSplitCanvasHover(data) {
+      const colV11 = document.getElementById("syncContainerV11");
+      const colV12 = document.getElementById("syncContainerV12");
+
+      let v11Content = `
+        <div class="grid-layer"></div>
+        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 16px; position: relative; z-index: 20;">Carbon V11 Left side</h3>
+      `;
+      let v12Content = `
+        <div class="grid-layer"></div>
+        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 16px; position: relative; z-index: 20;">Carbon V12 Right side</h3>
+      `;
+
+      if (data.syncNodes && data.syncNodes.length > 0) {
+        data.syncNodes.forEach(node => {
+          v11Content += `
+            <div class="synchronized-node" id="sync-v11-${node.id}" onmouseenter="linkSyncHover('${node.id}', true)" onmouseleave="linkSyncHover('${node.id}', false)">
+              <div class="sync-label">${node.label}</div>
+              <div class="v11-screen">${node.v11}</div>
+            </div>
+          `;
+          v12Content += `
+            <div class="synchronized-node" id="sync-v12-${node.id}" onmouseenter="linkSyncHover('${node.id}', true)" onmouseleave="linkSyncHover('${node.id}', false)">
+              <div class="sync-label">${node.label}</div>
+              <div class="v12-screen">${node.v12}</div>
+            </div>
+          `;
+        });
+      } else {
+        v11Content += `
+          <div class="synchronized-node" id="sync-v11-header" onmouseenter="linkSyncHover('header', true)" onmouseleave="linkSyncHover('header', false)">
+            <div class="sync-label">A. Header actions</div>
+            <div class="v11-screen">${data.v11Html}</div>
+          </div>
+        `;
+        v12Content += `
+          <div class="synchronized-node" id="sync-v12-header" onmouseenter="linkSyncHover('header', true)" onmouseleave="linkSyncHover('header', false)">
+            <div class="sync-label">A. Header actions</div>
+            <div class="v12-screen">${data.v12Html}</div>
+          </div>
+        `;
+      }
+
+      colV11.innerHTML = v11Content;
+      colV12.innerHTML = v12Content;
+    }
+
+    // ==========================================
+    // MIGRATION COMPARISON OVERLAYS TOGGLERS
+    // ==========================================
+    const overlays = {
+      grid: false,
+      redlines: false,
+      case: false
+    };
+
+    function toggleOverlay(type) {
+      overlays[type] = !overlays[type];
+      
+      const btn = document.getElementById(`overlayBtn-${type}`);
+      const container = document.getElementById("globalAppContainer");
+
+      if (overlays[type]) {
+        btn.classList.add("active");
+        container.classList.add(`${type}-active`);
+        if (type === "grid") {
+          container.classList.add("grid-overlay-active");
+        }
+      } else {
+        btn.classList.remove("active");
+        container.classList.remove(`${type}-active`);
+        if (type === "grid") {
+          container.classList.remove("grid-overlay-active");
+        }
+      }
+    }
+
+    // ==========================================
+    // GLOBAL LAYOUT SWITCHER
+    // ==========================================
+    function switchLayout(layoutId) {
+      // Toggle Switcher Active Tabs
+      document.querySelectorAll(".switcher-tab").forEach(tab => {
+        tab.classList.remove("active");
+        if (tab.textContent.includes(layoutId === "beforeAfterSlider" ? "slider" : layoutId === "sideBySide" ? "side-by-side" : layoutId === "stacked" ? "stacked" : "synchronized")) {
+          tab.classList.add("active");
+        }
+      });
+
+      // Toggle Active Workspace Canvas
+      document.querySelectorAll(".exploration-canvas").forEach(canvas => {
+        canvas.classList.remove("active");
+      });
+      document.getElementById(`canvas-${layoutId}`).classList.add("active");
+
+      // Redraw overlays
+      renderActiveExample();
+    }
+
+    // ==========================================
+    // EXPLORATION 1: Before/After Slider Comparison
+    // ==========================================
+    const wrapper = document.getElementById("sliderWrapper");
+    const divider = document.getElementById("sliderDivider");
+    const handle = document.getElementById("sliderHandle");
+    const layerV12 = document.getElementById("layerV12");
+
+    let isDragging = false;
+
+    function setSliderPosition(x) {
+      const rect = wrapper.getBoundingClientRect();
+      let position = ((x - rect.left) / rect.width) * 100;
+      
+      // Boundaries
+      if (position < 2) position = 2;
+      if (position > 98) position = 98;
+
+      divider.style.left = `${position}%`;
+      handle.style.left = `${position}%`;
+      layerV12.style.clipPath = `polygon(${position}% 0, 100% 0, 100% 100%, ${position}% 100%)`;
+    }
+
+    function onStart(e) {
+      isDragging = true;
+      e.preventDefault();
+    }
+
+    function onMove(e) {
+      if (!isDragging) return;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      setSliderPosition(clientX);
+    }
+
+    function onEnd() {
+      isDragging = false;
+    }
+
+    // Bind event listeners
+    handle.addEventListener("mousedown", onStart);
+    handle.addEventListener("touchstart", onStart);
+    divider.addEventListener("mousedown", onStart);
+    divider.addEventListener("touchstart", onStart);
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("touchmove", onMove);
+    window.addEventListener("mouseup", onEnd);
+    window.addEventListener("touchend", onEnd);
+
+    wrapper.addEventListener("click", (e) => {
+      if (e.target === handle || e.target === divider) return;
+      setSliderPosition(e.clientX);
+    });
+
+    function resetSlider() {
+      const rect = wrapper.getBoundingClientRect();
+      setSliderPosition(rect.left + rect.width / 2);
+    }
+
+    // ==========================================
+    // EXPLORATION 4: Split-Canvas Synchronized View
+    // ==========================================
+    const containerV11 = document.getElementById("syncContainerV11");
+    const containerV12 = document.getElementById("syncContainerV12");
+
+    let isSyncingV11 = false;
+    let isSyncingV12 = false;
+
+    // Scroll synchronization
+    containerV11.onscroll = function() {
+      if (!isSyncingV12) {
+        isSyncingV11 = true;
+        containerV12.scrollTop = this.scrollTop;
+      }
+      isSyncingV12 = false;
+    };
+
+    containerV12.onscroll = function() {
+      if (!isSyncingV11) {
+        isSyncingV12 = true;
+        containerV11.scrollTop = this.scrollTop;
+      }
+      isSyncingV11 = false;
+    };
+
+    // Linked Hover
+    function linkSyncHover(nodeId, isEnter) {
+      const v11Node = document.getElementById(`sync-v11-${nodeId}`);
+      const v12Node = document.getElementById(`sync-v12-${nodeId}`);
+      
+      if (isEnter) {
+        v11Node.classList.add("sync-hover");
+        v12Node.classList.add("sync-hover");
+      } else {
+        v11Node.classList.remove("sync-hover");
+        v12Node.classList.remove("sync-hover");
+      }
+    }
+
+    // Initial render setup on window load
+    window.onload = function() {
+      renderActiveExample();
+    };
+  </script>
+</body>
+</html>
